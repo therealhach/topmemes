@@ -70,7 +70,7 @@ export default function Heatmap({ tokens, onTokenClick }: HeatmapProps) {
     let currentY = 0;
     let currentX = 0;
     let rowHeight = 0;
-    let rowTokens: { token: TokenData; width: number }[] = [];
+    let rowTokens: { token: MemeTokenData; width: number }[] = [];
 
     const minBoxSize = 8; // minimum percentage width/height
 
