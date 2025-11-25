@@ -688,7 +688,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
             </div>
 
             {/* ATH ROI Calculator */}
-            {activeTab === 'buy' && upsideCalc && (
+            {activeTab === 'buy' && upsideCalc && parseFloat(amount) > 0 && (
               <div className="flex items-center justify-between py-2 px-3 mb-3 bg-gradient-to-r from-amber-900/20 to-transparent rounded-lg border border-amber-500/20">
                 <p className="text-xs text-gray-400">If ATH</p>
                 <p className="text-emerald-400 font-bold text-sm">${upsideCalc.athValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-amber-400 text-xs font-normal">(+{token.percentToGainPeak.toLocaleString(undefined, { maximumFractionDigits: 0 })}%)</span></p>
