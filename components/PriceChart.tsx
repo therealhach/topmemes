@@ -9,6 +9,7 @@ interface PriceChartProps {
   tokenAddress: string;
   chain: string;
   tokenSymbol?: string;
+  tokenLogoUrl?: string;
   className?: string;
 }
 
@@ -23,10 +24,22 @@ const timeframeOptions: { value: CGTimeFrame; label: string }[] = [
   { value: '365', label: '1Y' },
 ];
 
+// Extract color from image via API (avoids CORS)
+const extractColorFromImage = async (imageUrl: string): Promise<string> => {
+  try {
+    const response = await fetch(`/api/extract-color?url=${encodeURIComponent(imageUrl)}`);
+    const data = await response.json();
+    return data.color || '#f59e0b';
+  } catch {
+    return '#f59e0b';
+  }
+};
+
 export default function PriceChart({
   tokenAddress,
   chain,
   tokenSymbol = 'Token',
+  tokenLogoUrl,
   className = '',
 }: PriceChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -39,6 +52,22 @@ export default function PriceChart({
   const [error, setError] = useState<string | null>(null);
   const [priceChange, setPriceChange] = useState<{ value: number; percentage: number } | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+  const [chartColor, setChartColor] = useState<string | null>(null);
+  const [colorLoaded, setColorLoaded] = useState(false);
+
+  // Extract color from token logo - do this FIRST before loading chart data
+  useEffect(() => {
+    setColorLoaded(false);
+    if (tokenLogoUrl) {
+      extractColorFromImage(tokenLogoUrl).then((color) => {
+        setChartColor(color);
+        setColorLoaded(true);
+      });
+    } else {
+      setChartColor('#f59e0b');
+      setColorLoaded(true);
+    }
+  }, [tokenLogoUrl]);
 
   // Initialize chart
   useEffect(() => {
@@ -136,7 +165,8 @@ export default function PriceChart({
   // Load data and update chart
   useEffect(() => {
     const loadData = async () => {
-      if (!chartRef.current) return;
+      // Wait for color to be loaded before rendering chart
+      if (!chartRef.current || !colorLoaded || !chartColor) return;
 
       setIsLoading(true);
       setError(null);
@@ -216,7 +246,7 @@ export default function PriceChart({
           const firstPrice = data[0].value;
           const lastPrice = data[data.length - 1].value;
           const isPositive = lastPrice >= firstPrice;
-          const lineColor = isPositive ? '#f59e0b' : '#f59e0b'; // Amber/orange like Coinbase
+          const lineColor = chartColor; // Dynamic color from token logo
 
           // Calculate appropriate precision based on price
           const minPrice = Math.min(...data.map(d => d.value));
@@ -233,9 +263,16 @@ export default function PriceChart({
           const lineSeries = chartRef.current.addSeries(LineSeries, {
             color: lineColor,
             lineWidth: 2,
-            crosshairMarkerVisible: false,
-            priceLineVisible: false,
-            lastValueVisible: false,
+            crosshairMarkerVisible: true,
+            crosshairMarkerRadius: 5,
+            crosshairMarkerBackgroundColor: lineColor,
+            crosshairMarkerBorderColor: '#ffffff',
+            crosshairMarkerBorderWidth: 2,
+            lastValueVisible: true,
+            priceLineVisible: true,
+            priceLineWidth: 1,
+            priceLineColor: lineColor,
+            priceLineStyle: 2,
             priceFormat: {
               type: 'price',
               precision: precision,
@@ -272,7 +309,7 @@ export default function PriceChart({
     };
 
     loadData();
-  }, [tokenAddress, chain, timeframe, chartType]);
+  }, [tokenAddress, chain, timeframe, chartType, colorLoaded, chartColor]);
 
   const formatPrice = (price: number): string => {
     if (price < 0.000001) return `$${price.toFixed(8)}`;
@@ -287,8 +324,12 @@ export default function PriceChart({
       {/* Price Display */}
       <div className="mb-3 px-1">
         {currentPrice && (
-          <div className="text-2xl font-bold text-white mb-1">
+          <div className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
             {formatPrice(currentPrice)}
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: chartColor || '#f59e0b' }}></span>
+              <span className="relative inline-flex rounded-full h-3 w-3" style={{ backgroundColor: chartColor || '#f59e0b' }}></span>
+            </span>
           </div>
         )}
         {priceChange && (

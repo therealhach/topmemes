@@ -327,6 +327,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
               tokenAddress={token.address}
               chain={token.chain || 'solana'}
               tokenSymbol={token.symbol}
+              tokenLogoUrl={token.logoUrl}
               className="h-[400px]"
             />
           </div>
