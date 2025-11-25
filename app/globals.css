@@ -8,8 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +21,122 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.solana-logo {
+  background: linear-gradient(135deg, #9947E0 0%, #03E1FF 50%, #3D5AF1 100%);
+}
+
+.solana-gradient-text {
+  background: linear-gradient(135deg, #9947E0 0%, #03E1FF 50%, #3D5AF1 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+
+.font-garet {
+  font-family: 'Garet', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Wallet Adapter Styles */
+.wallet-adapter-dropdown {
+  z-index: 9999 !important;
+}
+
+.wallet-adapter-dropdown-list {
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  z-index: 9999 !important;
+}
+
+/* Ensure wallet button is clickable */
+.wallet-adapter-button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  height: 32px !important;
+  padding: 0 12px !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+  line-height: 32px !important;
+}
+
+.wallet-adapter-button-trigger {
+  pointer-events: auto !important;
+}
+
+.wallet-adapter-button i,
+.wallet-adapter-button img,
+.wallet-adapter-button-start-icon {
+  width: 16px !important;
+  height: 16px !important;
+  margin-right: 6px !important;
 }
