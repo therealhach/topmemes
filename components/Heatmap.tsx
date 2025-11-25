@@ -57,7 +57,7 @@ export default function Heatmap({ tokens, onTokenClick }: HeatmapProps) {
     const containerHeight = 100; // percentage
 
     interface TreemapItem {
-      token: TokenData;
+      token: MemeTokenData;
       x: number;
       y: number;
       width: number;
