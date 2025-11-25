@@ -4,12 +4,11 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import MainLayout from '@/components/MainLayout';
 import Heatmap from '@/components/Heatmap';
-import { getMemeTokensData } from '@/lib/helius';
-import { TokenData } from '@/components/TokenTable';
+import { getMemeTokensData, MemeTokenData } from '@/lib/helius';
 
 export default function HeatmapPage() {
   const router = useRouter();
-  const [tokens, setTokens] = useState<TokenData[]>([]);
+  const [tokens, setTokens] = useState<MemeTokenData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function HeatmapPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleTokenClick = useCallback((token: TokenData) => {
+  const handleTokenClick = useCallback((token: MemeTokenData) => {
     router.push(`/token/${token.address}`);
   }, [router]);
 

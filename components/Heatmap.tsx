@@ -1,18 +1,18 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { TokenData } from './TokenTable';
+import { MemeTokenData } from '@/lib/helius';
 
 interface HeatmapProps {
-  tokens: TokenData[];
-  onTokenClick?: (token: TokenData) => void;
+  tokens: MemeTokenData[];
+  onTokenClick?: (token: MemeTokenData) => void;
 }
 
 type TimeframeOption = '1h' | '24h';
 
 export default function Heatmap({ tokens, onTokenClick }: HeatmapProps) {
   const [timeframe, setTimeframe] = useState<TimeframeOption>('24h');
-  const [hoveredToken, setHoveredToken] = useState<TokenData | null>(null);
+  const [hoveredToken, setHoveredToken] = useState<MemeTokenData | null>(null);
 
   // Sort tokens by market cap for treemap layout
   const sortedTokens = useMemo(() => {
@@ -25,7 +25,7 @@ export default function Heatmap({ tokens, onTokenClick }: HeatmapProps) {
   }, [sortedTokens]);
 
   // Get performance value based on timeframe
-  const getPerformance = (token: TokenData) => {
+  const getPerformance = (token: MemeTokenData) => {
     return timeframe === '1h' ? token.oneHourChange : token.twentyFourHourChange;
   };
 
