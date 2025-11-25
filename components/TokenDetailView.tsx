@@ -305,7 +305,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
     : tokenBalance;
 
   return (
-    <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto pl-14">
       {/* Back Button */}
       <button
         onClick={onBack}
