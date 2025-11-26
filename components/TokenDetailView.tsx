@@ -307,7 +307,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
     : tokenBalance;
 
   return (
-    <div className="w-full max-w-7xl mx-auto pl-14">
+    <div className="w-full max-w-7xl mx-auto px-2 lg:px-0 lg:pl-14">
       {/* Back Button */}
       <button
         onClick={onBack}
@@ -319,54 +319,53 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
         Back to Tokens
       </button>
 
-      {/* Main Layout - Two Columns */}
-      <div className="flex gap-4">
-        {/* Left Column - Chart + Stats */}
-        <div className="flex-1 flex flex-col gap-4">
+      {/* Main Layout - Grid for proper reordering */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] lg:grid-rows-[auto_1fr] gap-4">
+        {/* Left Column - Chart + Stats (spans both rows on desktop) */}
+        <div className="flex flex-col gap-4 order-2 lg:order-none lg:row-span-2">
           {/* Chart */}
-          <div className="bg-transparent rounded-xl p-4">
+          <div className="bg-transparent rounded-xl p-2 lg:p-4">
             <PriceChart
               tokenAddress={token.address}
               chain={token.chain || 'solana'}
               tokenSymbol={token.symbol}
               tokenLogoUrl={token.logoUrl}
-              className="h-[400px]"
+              className="h-[250px] lg:h-[400px]"
             />
           </div>
 
           {/* Token Stats - Under Chart */}
-          <div className="bg-white/[0.03] backdrop-blur-sm rounded-xl p-4">
-            <div className="grid grid-cols-5 gap-4">
+          <div className="bg-white/[0.03] backdrop-blur-sm rounded-xl p-3 lg:p-4">
+            <div className="grid grid-cols-3 lg:grid-cols-5 gap-2 lg:gap-4">
               <div className="text-center">
-                <p className="text-[10px] text-gray-500 mb-1">Price</p>
-                <p className="text-sm font-bold text-emerald-400">{token.price ? formatPrice(token.price) : 'N/A'}</p>
+                <p className="text-[9px] lg:text-[10px] text-gray-500 mb-1">Price</p>
+                <p className="text-xs lg:text-sm font-bold text-emerald-400">{token.price ? formatPrice(token.price) : 'N/A'}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-gray-500 mb-1">24h Change</p>
-                <p className={`text-sm font-bold ${token.twentyFourHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <p className="text-[9px] lg:text-[10px] text-gray-500 mb-1">24h Change</p>
+                <p className={`text-xs lg:text-sm font-bold ${token.twentyFourHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {token.twentyFourHourChange >= 0 ? '+' : ''}{token.twentyFourHourChange.toFixed(2)}%
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-gray-500 mb-1">24h Volume</p>
-                <p className="text-sm font-bold text-white">{formatNumber(token.twentyFourHourVolume)}</p>
+                <p className="text-[9px] lg:text-[10px] text-gray-500 mb-1">24h Volume</p>
+                <p className="text-xs lg:text-sm font-bold text-white">{formatNumber(token.twentyFourHourVolume)}</p>
               </div>
-              <div className="text-center">
+              <div className="hidden lg:block text-center">
                 <p className="text-[10px] text-gray-500 mb-1">ATH Price</p>
                 <p className="text-sm font-bold text-amber-400">{formatPrice(token.athPrice)}</p>
               </div>
-              <div className="text-center">
+              <div className="hidden lg:block text-center">
                 <p className="text-[10px] text-gray-500 mb-1">Liquidity</p>
                 <p className="text-sm font-bold text-white">{token.liquidity ? formatNumber(token.liquidity) : 'N/A'}</p>
               </div>
             </div>
-
           </div>
 
           {/* Progress Bar - Price to ATH */}
-          <div className="mt-3">
+          <div className="mt-2 lg:mt-3">
             <div className="flex items-center justify-center mb-2">
-              <span className="text-xs text-gray-400">{Math.min(100, (token.price || 0) / token.athPrice * 100).toFixed(1)}% to ATH</span>
+              <span className="text-[10px] lg:text-xs text-gray-400">{Math.min(100, (token.price || 0) / token.athPrice * 100).toFixed(1)}% to ATH</span>
             </div>
             <div className="flex items-center gap-[1px]">
               {Array.from({ length: 100 }).map((_, index) => {
@@ -387,20 +386,20 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
                 return (
                   <div
                     key={index}
-                    className={`flex-1 h-6 rounded-[1px] transition-all duration-300 ${blockColor}`}
+                    className={`flex-1 h-4 lg:h-6 rounded-[1px] transition-all duration-300 ${blockColor}`}
                   />
                 );
               })}
             </div>
             <div className="flex items-center justify-between mt-2">
-              <span className="text-sm font-bold text-cyan-400">{token.price ? formatPrice(token.price) : 'N/A'}</span>
-              <span className="text-sm font-bold text-amber-400">{formatPrice(token.athPrice)}</span>
+              <span className="text-xs lg:text-sm font-bold text-cyan-400">{token.price ? formatPrice(token.price) : 'N/A'}</span>
+              <span className="text-xs lg:text-sm font-bold text-amber-400">{formatPrice(token.athPrice)}</span>
             </div>
           </div>
 
-          {/* My Recent Transactions */}
+          {/* My Recent Transactions - Desktop only (mobile version below) */}
           {recentSwaps.length > 0 && (
-            <div className="mt-4">
+            <div className="mt-4 hidden lg:block">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-gray-500">Last Transactions</p>
                 <a href="/portfolio" className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors">View More</a>
@@ -449,8 +448,8 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
           )}
         </div>
 
-        {/* Right Column - Token Info & Trading */}
-        <div className="w-80 flex flex-col gap-3">
+        {/* Token Info Card - Shows first on mobile, row 1 on desktop */}
+        <div className="order-1 lg:order-none">
           {/* Token Logo and Title */}
           <div className="bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-black/80 border border-cyan-500/20 rounded-xl p-3">
             <div className="flex items-center gap-2 mb-2">
@@ -541,8 +540,10 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Buy/Sell Modal */}
+        {/* Buy/Sell Container - Shows after chart on mobile, row 2 on desktop */}
+        <div className="order-3 lg:order-none">
           <div className="flex-1 bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-black/80 border border-cyan-500/20 rounded-xl p-4">
             {/* ETH Token Notice */}
             {token.chain === 'ethereum' ? (
@@ -815,6 +816,56 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
             )}
           </div>
         </div>
+
+        {/* My Recent Transactions - Mobile only (after buy/sell) */}
+        {recentSwaps.length > 0 && (
+          <div className="order-4 lg:hidden">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-gray-500">Last Transactions</p>
+              <a href="/portfolio" className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors">View More</a>
+            </div>
+            <div className="space-y-1.5">
+              {recentSwaps.map((swap: any) => (
+                <a
+                  key={swap.id}
+                  href={`https://solscan.io/tx/${swap.tx_signature}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between bg-white/[0.03] backdrop-blur-sm rounded-lg px-3 py-2 hover:bg-white/[0.06] transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                      swap.swap_type === 'buy' ? 'bg-emerald-500/20' : 'bg-rose-500/20'
+                    }`}>
+                      {swap.swap_type === 'buy' ? (
+                        <svg className="w-2.5 h-2.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m0-16l-4 4m4-4l4 4" />
+                        </svg>
+                      ) : (
+                        <svg className="w-2.5 h-2.5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 20V4m0 16l4-4m-4 4l-4-4" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className={`text-xs font-medium ${
+                      swap.swap_type === 'buy' ? 'text-emerald-400' : 'text-rose-400'
+                    }`}>
+                      {swap.swap_type === 'buy' ? 'Buy' : 'Sell'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-xs ${swap.swap_type === 'buy' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {swap.swap_type === 'buy' ? '+' : '-'}{formatTokenAmount(swap.token_amount)}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {swap.swap_amount.toFixed(4)} {swap.payment_currency}
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Trending Tokens Section */}
@@ -827,41 +878,41 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
         if (trendingTokens.length === 0) return null;
 
         return (
-          <div className="mt-4 bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-black/80 border border-cyan-500/20 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+          <div className="mt-4 bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-black/80 border border-cyan-500/20 rounded-xl p-3 lg:p-4">
+            <div className="flex items-center gap-2 mb-3 lg:mb-4">
+              <svg className="w-4 h-4 lg:w-5 lg:h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
               </svg>
-              <h3 className="text-sm font-bold text-white">Hot Right Now</h3>
-              <span className="text-[10px] text-gray-500">— Don't miss these movers</span>
+              <h3 className="text-xs lg:text-sm font-bold text-white">Hot Right Now</h3>
+              <span className="text-[9px] lg:text-[10px] text-gray-500 hidden lg:inline">— Don't miss these movers</span>
             </div>
-            <div className="grid grid-cols-5 gap-3">
-              {trendingTokens.map((t) => (
+            <div className="grid grid-cols-4 gap-2 lg:grid-cols-5 lg:gap-3">
+              {trendingTokens.slice(0, 10).map((t, index) => (
                 <button
                   key={t.address}
                   onClick={() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     onTokenSelect?.(t);
                   }}
-                  className="flex items-center gap-2 p-2 bg-black/30 hover:bg-cyan-900/20 rounded-lg transition-all group border border-transparent hover:border-cyan-500/30"
+                  className={`flex items-center gap-1.5 lg:gap-2 p-1.5 lg:p-2 bg-black/30 hover:bg-cyan-900/20 rounded-lg transition-all group border border-transparent hover:border-cyan-500/30 ${index >= 8 ? 'hidden lg:flex' : ''}`}
                 >
                   {t.logoUrl ? (
                     <img
                       src={t.logoUrl}
                       alt={t.name}
-                      className="w-8 h-8 rounded-full"
+                      className="w-6 h-6 lg:w-8 lg:h-8 rounded-full"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white text-[10px] font-bold">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white text-[8px] lg:text-[10px] font-bold">
                       {t.symbol.substring(0, 2)}
                     </div>
                   )}
                   <div className="flex-1 text-left min-w-0">
-                    <p className="text-xs font-semibold text-white truncate group-hover:text-cyan-300 transition-colors">
+                    <p className="text-[10px] lg:text-xs font-semibold text-white truncate group-hover:text-cyan-300 transition-colors">
                       {t.symbol}
                     </p>
-                    <p className="text-emerald-400 text-[10px] font-bold">
+                    <p className="text-emerald-400 text-[9px] lg:text-[10px] font-bold">
                       +{t.twentyFourHourChange.toFixed(1)}%
                     </p>
                   </div>
