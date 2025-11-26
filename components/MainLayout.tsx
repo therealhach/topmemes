@@ -94,6 +94,8 @@ function MainLayoutContent({ children }: MainLayoutProps) {
 
   const buildCategoryUrl = (category: CategoryFilter) => {
     const params = new URLSearchParams(searchParams.toString());
+    // Remove view param to exit leaderboard pages when clicking category
+    params.delete('view');
     if (category === 'all') {
       params.delete('category');
     } else {
