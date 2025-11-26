@@ -6,6 +6,8 @@ import MainLayout from '@/components/MainLayout';
 import Heatmap from '@/components/Heatmap';
 import { getMemeTokensData, MemeTokenData } from '@/lib/helius';
 
+// Note: Metadata is exported from a separate layout.tsx file for client components
+
 export default function HeatmapPage() {
   const router = useRouter();
   const [tokens, setTokens] = useState<MemeTokenData[]>([]);
