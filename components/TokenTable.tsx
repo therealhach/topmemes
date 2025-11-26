@@ -476,49 +476,49 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                 className="px-2 py-1.5 text-left text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
                 onClick={() => handleSort('name')}
               >
-                {sortColumn === 'name' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}Token Name
+                {sortColumn === 'name' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}Token
               </th>
               <th
                 className="px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
                 onClick={() => handleSort('price')}
               >
-                {sortColumn === 'price' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}Current Price
+                {sortColumn === 'price' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}Price
               </th>
               <th
-                className="px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
+                className="hidden md:table-cell px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
                 onClick={() => handleSort('mcap')}
               >
-                {sortColumn === 'mcap' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}Present Mcap
+                {sortColumn === 'mcap' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}Mcap
               </th>
               <th
-                className="px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
+                className="hidden lg:table-cell px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
                 onClick={() => handleSort('ath')}
               >
-                {sortColumn === 'ath' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}Price ATH
+                {sortColumn === 'ath' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}ATH
               </th>
               <th
-                className="px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
+                className="hidden lg:table-cell px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
                 onClick={() => handleSort('gain')}
               >
-                {sortColumn === 'gain' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}% Upside to ATH
+                {sortColumn === 'gain' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}% to ATH
               </th>
               <th
-                className="px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
+                className="hidden lg:table-cell px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
                 onClick={() => handleSort('1h')}
               >
-                {sortColumn === '1h' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}1h Change
+                {sortColumn === '1h' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}1h
               </th>
               <th
                 className="px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
                 onClick={() => handleSort('24h')}
               >
-                {sortColumn === '24h' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}24h Change
+                {sortColumn === '24h' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}24h
               </th>
               <th
-                className="px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
+                className="hidden md:table-cell px-2 py-1.5 text-right text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
                 onClick={() => handleSort('volume')}
               >
-                {sortColumn === 'volume' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}24h Volume
+                {sortColumn === 'volume' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}Volume
               </th>
               {isAdmin && <th className="px-2 py-1.5 text-center text-xs font-semibold text-cyan-300">Actions</th>}
             </tr>
@@ -594,10 +594,10 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                 <td className="px-3 py-2 text-sm text-right text-emerald-300 font-semibold align-middle">
                   {token.price ? formatPrice(token.price) : 'N/A'}
                 </td>
-                <td className="px-3 py-2 text-sm text-right text-gray-200 align-middle">
+                <td className="hidden md:table-cell px-3 py-2 text-sm text-right text-gray-200 align-middle">
                   {formatNumber(token.currentMcap)}
                 </td>
-                <td className="px-3 py-2 text-sm text-right text-amber-300 font-semibold align-middle">
+                <td className="hidden lg:table-cell px-3 py-2 text-sm text-right text-amber-300 font-semibold align-middle">
                   {editingToken === token.address ? (
                     <div className="flex items-center justify-end gap-2">
                       <input
@@ -613,11 +613,11 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                     token.athPrice ? formatPrice(token.athPrice) : 'N/A'
                   )}
                 </td>
-                <td className="px-3 py-2 text-sm text-right font-semibold text-teal-400 align-middle">
+                <td className="hidden lg:table-cell px-3 py-2 text-sm text-right font-semibold text-teal-400 align-middle">
                   {formatPercentage(token.percentToGainPeak)}
                 </td>
                 <td
-                  className={`px-3 py-2 text-sm text-right font-semibold align-middle ${
+                  className={`hidden lg:table-cell px-3 py-2 text-sm text-right font-semibold align-middle ${
                     token.oneHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'
                   }`}
                 >
@@ -630,7 +630,7 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                 >
                   {formatPercentage(token.twentyFourHourChange)}
                 </td>
-                <td className="px-3 py-2 text-sm text-right text-gray-200 align-middle">
+                <td className="hidden md:table-cell px-3 py-2 text-sm text-right text-gray-200 align-middle">
                   {formatVolume(token.twentyFourHourVolume)}
                 </td>
                 {isAdmin && (
