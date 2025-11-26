@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Left horn -->
+  <path d="M12 26C8 18 5 10 4 6C9 9 16 14 18 22" fill="none" stroke="#e5e7eb" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Right horn -->
+  <path d="M52 26C56 18 59 10 60 6C55 9 48 14 46 22" fill="none" stroke="#e5e7eb" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Bull head -->
+  <ellipse cx="32" cy="38" rx="18" ry="16" fill="#ffffff"/>
+</svg>
