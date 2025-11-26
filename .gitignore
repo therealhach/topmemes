@@ -20,6 +20,7 @@
 # production
 /build
 /imgs
+/scripts
 
 # misc
 .DS_Store
