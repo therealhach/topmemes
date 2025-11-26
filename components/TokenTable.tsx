@@ -554,25 +554,25 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                   </button>
                 </td>
                 <td className="px-3 py-2 text-sm text-cyan-400/70 align-middle">{startIndex + index + 1}</td>
-                <td className="px-3 py-2 text-sm font-semibold text-white align-middle">
-                  <div className="flex items-center gap-3">
+                <td className="px-2 sm:px-3 py-2 text-[11px] sm:text-sm font-semibold text-white align-middle">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     {token.logoUrl ? (
                       <img
                         src={token.logoUrl}
                         alt={token.name}
-                        className="w-8 h-8 rounded-full"
+                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                         }}
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white text-xs font-bold">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white text-[8px] sm:text-xs font-bold">
                         {token.symbol.substring(0, 2)}
                       </div>
                     )}
-                    <div className="flex items-center gap-1.5">
-                      <span>{token.name}</span>
-                      <span className="text-cyan-400/60">({token.symbol})</span>
+                    <div className="flex items-center gap-1 sm:gap-1.5">
+                      <span className="truncate max-w-[80px] sm:max-w-none">{token.name}</span>
+                      <span className="text-cyan-400/60 hidden sm:inline">({token.symbol})</span>
                       {token.chain === 'ethereum' ? (
                         <img
                           src="https://cryptologos.cc/logos/ethereum-eth-logo.svg"
