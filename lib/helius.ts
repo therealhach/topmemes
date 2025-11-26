@@ -180,6 +180,40 @@ export async function getTokenPrice(tokenAddress: string): Promise<number | null
   }
 }
 
+// Fetch market data from CoinGecko by contract address (via proxy)
+export async function getCoinGeckoMarketData(
+  tokenAddress: string,
+  platform: 'solana' | 'ethereum' = 'solana'
+): Promise<TokenMarketData | null> {
+  try {
+    const response = await fetch(
+      `/api/coingecko?address=${tokenAddress}&platform=${platform}`
+    );
+
+    if (!response.ok) {
+      // Token not found or other error - will fallback to DexScreener
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (data?.market_data) {
+      return {
+        price: data.market_data.current_price?.usd || 0,
+        priceChange1h: data.market_data.price_change_percentage_1h_in_currency?.usd || 0,
+        priceChange24h: data.market_data.price_change_percentage_24h || 0,
+        volume24h: data.market_data.total_volume?.usd || 0,
+        marketCap: data.market_data.market_cap?.usd || 0,
+        liquidity: 0, // CoinGecko doesn't provide liquidity
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error fetching CoinGecko market data:', error);
+    return null;
+  }
+}
 
 export type TokenCategory = 'dogs' | 'cats' | 'frogs' | 'ai' | 'others';
 
@@ -199,7 +233,58 @@ export interface MemeTokenData {
   chain: Chain;
 }
 
+// Batch fetch market data from DexScreener (up to 30 pairs per request)
+async function batchFetchPairs(pairAddresses: string[], chain: Chain): Promise<Map<string, TokenMarketData>> {
+  const result = new Map<string, TokenMarketData>();
+  if (pairAddresses.length === 0) return result;
+
+  // Split into batches of 30 (DexScreener limit)
+  const BATCH_SIZE = 30;
+  const batches: string[][] = [];
+  for (let i = 0; i < pairAddresses.length; i += BATCH_SIZE) {
+    batches.push(pairAddresses.slice(i, i + BATCH_SIZE));
+  }
+
+  // Fetch all batches in parallel
+  const batchResults = await Promise.all(
+    batches.map(async (batch) => {
+      try {
+        const response = await fetch(
+          `/api/dexscreener?pairs=${batch.join(',')}&chain=${chain}`
+        );
+
+        if (!response.ok) return [];
+
+        const data = await response.json();
+        return data?.pairs || (data?.pair ? [data.pair] : []);
+      } catch (error) {
+        console.error('Error batch fetching pairs:', error);
+        return [];
+      }
+    })
+  );
+
+  // Process all results
+  for (const pairs of batchResults) {
+    for (const pair of pairs) {
+      if (pair?.pairAddress) {
+        result.set(pair.pairAddress.toLowerCase(), {
+          price: parseFloat(pair.priceUsd || '0'),
+          priceChange1h: parseFloat(pair.priceChange?.h1 || '0'),
+          priceChange24h: parseFloat(pair.priceChange?.h24 || '0'),
+          volume24h: parseFloat(pair.volume?.h24 || '0'),
+          marketCap: parseFloat(pair.fdv || '0'),
+          liquidity: parseFloat(pair.liquidity?.usd || '0'),
+        });
+      }
+    }
+  }
+
+  return result;
+}
+
 // Fetch multiple token data with real market data from Supabase
+// Uses DexScreener batch API - 1-2 requests total instead of 30+
 export async function getMemeTokensData(): Promise<MemeTokenData[]> {
   try {
     // Import Supabase client dynamically to avoid circular dependencies
@@ -221,38 +306,57 @@ export async function getMemeTokensData(): Promise<MemeTokenData[]> {
       return [];
     }
 
-    // Fetch live market data for each token
-    // We skip getTokenMetadata() since we already have name/symbol in the database
-    // This reduces API calls significantly
-    const tokensData = await Promise.all(
-      (dbTokens || []).map(async (dbToken: any) => {
-        // Get chain from database, default to 'solana' for backward compatibility
-        const chain: Chain = dbToken.chain || 'solana';
+    if (!dbTokens || dbTokens.length === 0) return [];
 
-        // Use pair address if available, otherwise use token address
-        const marketData = dbToken.pair_address
-          ? await getTokenMarketDataByPair(dbToken.pair_address, chain)
-          : await getTokenMarketData(dbToken.token_address);
+    // Group tokens by chain (only those with pair_address for batch fetch)
+    const solanaTokens = dbTokens.filter((t: any) => (t.chain || 'solana') === 'solana' && t.pair_address);
+    const ethereumTokens = dbTokens.filter((t: any) => t.chain === 'ethereum' && t.pair_address);
+    const tokensWithoutPair = dbTokens.filter((t: any) => !t.pair_address);
 
-        const currentMcap = marketData?.marketCap || 0;
+    // Batch fetch all pairs in just 2 requests (one per chain)
+    const [solanaData, ethereumData] = await Promise.all([
+      batchFetchPairs(solanaTokens.map((t: any) => t.pair_address), 'solana'),
+      batchFetchPairs(ethereumTokens.map((t: any) => t.pair_address), 'ethereum'),
+    ]);
 
-        return {
-          address: dbToken.token_address,
-          name: dbToken.token_name,
-          symbol: dbToken.token_symbol,
-          logoUrl: dbToken.logo_url || undefined,
-          currentMcap: currentMcap,
-          athPrice: Number(dbToken.ath_price) || 0,
-          oneHourChange: marketData?.priceChange1h || 0,
-          twentyFourHourChange: marketData?.priceChange24h || 0,
-          twentyFourHourVolume: marketData?.volume24h || 0,
-          price: marketData?.price || 0,
-          liquidity: marketData?.liquidity || 0,
-          category: (dbToken.category as TokenCategory) || 'others',
-          chain: chain,
-        };
-      })
-    );
+    // Merge data
+    const allMarketData = new Map([...solanaData, ...ethereumData]);
+
+    // Fetch remaining tokens without pair_address individually (should be few)
+    if (tokensWithoutPair.length > 0) {
+      const results = await Promise.all(
+        tokensWithoutPair.map(async (t: any) => {
+          const data = await getTokenMarketData(t.token_address);
+          return { address: t.token_address, data };
+        })
+      );
+      for (const r of results) {
+        if (r.data) allMarketData.set(r.address.toLowerCase(), r.data);
+      }
+    }
+
+    // Build final token data
+    const tokensData = dbTokens.map((dbToken: any) => {
+      const chain: Chain = dbToken.chain || 'solana';
+      const key = (dbToken.pair_address || dbToken.token_address).toLowerCase();
+      const marketData = allMarketData.get(key) || null;
+
+      return {
+        address: dbToken.token_address,
+        name: dbToken.token_name,
+        symbol: dbToken.token_symbol,
+        logoUrl: dbToken.logo_url || undefined,
+        currentMcap: marketData?.marketCap || 0,
+        athPrice: Number(dbToken.ath_price) || 0,
+        oneHourChange: marketData?.priceChange1h || 0,
+        twentyFourHourChange: marketData?.priceChange24h || 0,
+        twentyFourHourVolume: marketData?.volume24h || 0,
+        price: marketData?.price || 0,
+        liquidity: marketData?.liquidity || 0,
+        category: (dbToken.category as TokenCategory) || 'others',
+        chain: chain,
+      };
+    });
 
     return tokensData;
   } catch (error) {

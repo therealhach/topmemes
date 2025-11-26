@@ -3,13 +3,17 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const pairAddress = searchParams.get('pair');
+  const pairAddresses = searchParams.get('pairs'); // comma-separated for batch
   const tokenAddress = searchParams.get('token');
   const chain = searchParams.get('chain') || 'solana';
 
   try {
     let url: string;
 
-    if (pairAddress) {
+    if (pairAddresses) {
+      // Batch fetch - up to 30 pairs comma-separated
+      url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${pairAddresses}`;
+    } else if (pairAddress) {
       url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${pairAddress}`;
     } else if (tokenAddress) {
       url = `https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`;
