@@ -109,11 +109,11 @@ export async function getTokenMetadata(mintAddress: string): Promise<TokenMetada
 
 export type Chain = 'solana' | 'ethereum';
 
-// Fetch market data from DexScreener by pair address
+// Fetch market data from DexScreener by pair address (via proxy to avoid CORS)
 export async function getTokenMarketDataByPair(pairAddress: string, chain: Chain = 'solana'): Promise<TokenMarketData | null> {
   try {
     const response = await fetch(
-      `https://api.dexscreener.com/latest/dex/pairs/${chain}/${pairAddress}`
+      `/api/dexscreener?pair=${pairAddress}&chain=${chain}`
     );
 
     const data = await response.json();
@@ -138,11 +138,11 @@ export async function getTokenMarketDataByPair(pairAddress: string, chain: Chain
   }
 }
 
-// Fetch market data from DexScreener by token address
+// Fetch market data from DexScreener by token address (via proxy to avoid CORS)
 export async function getTokenMarketData(tokenAddress: string): Promise<TokenMarketData | null> {
   try {
     const response = await fetch(
-      `https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`
+      `/api/dexscreener?token=${tokenAddress}`
     );
 
     const data = await response.json();
