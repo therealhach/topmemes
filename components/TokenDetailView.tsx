@@ -12,6 +12,7 @@ import {
   JupiterQuote,
 } from '@/lib/jupiter';
 import PriceChart from './PriceChart';
+import ShareModal from './ShareModal';
 
 type TokenCategory = 'dogs' | 'cats' | 'ai' | 'others';
 
@@ -93,6 +94,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
   const [swapStatus, setSwapStatus] = useState<{ type: 'success' | 'error'; message: string; txid?: string } | null>(null);
   const [slippageBps, setSlippageBps] = useState<number>(300); // 3% default
   const [recentSwaps, setRecentSwaps] = useState<any[]>([]);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     fetchSolPrice();
@@ -475,6 +477,18 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
                 </div>
                 <p className="text-xs text-cyan-400/70">{token.symbol}</p>
               </div>
+              {/* Share Button */}
+              <button
+                onClick={() => setShowShareModal(true)}
+                className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-all"
+                title="Share token"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                  <polyline points="16 6 12 2 8 6"/>
+                  <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+              </button>
             </div>
 
             {/* Contract Address */}
@@ -857,6 +871,24 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
           </div>
         );
       })()}
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          data={{
+            type: 'token',
+            symbol: token.symbol,
+            name: token.name,
+            logo: token.logoUrl,
+            currentPrice: token.price || 0,
+            athPrice: token.athPrice,
+            multiplier: token.price && token.price > 0 ? token.athPrice / token.price : 1,
+            marketCap: token.currentMcap,
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { getAllTokenBalances, TOKENS } from '@/lib/jupiter';
 import { getMemeTokensData } from '@/lib/helius';
+import ShareModal from './ShareModal';
 
 interface TokenHolding {
   name: string;
@@ -14,6 +15,9 @@ interface TokenHolding {
   logoUrl?: string;
   price?: number;
   change24h?: number;
+  athPrice?: number;
+  athValue?: number;
+  multiplier?: number;
 }
 
 interface SwapHistory {
@@ -39,6 +43,7 @@ interface DatabaseToken {
   logoUrl?: string;
   price?: number;
   twentyFourHourChange?: number;
+  athPrice?: number;
 }
 
 interface PortfolioViewProps {
@@ -93,6 +98,7 @@ export default function PortfolioView({ onBack, onSelectToken }: PortfolioViewPr
   const [activeTab, setActiveTab] = useState<TabType>('positions');
   const [swapHistory, setSwapHistory] = useState<SwapHistory[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     fetchSolPrice();
@@ -138,6 +144,7 @@ export default function PortfolioView({ onBack, onSelectToken }: PortfolioViewPr
         logoUrl: token.logoUrl,
         price: token.price,
         twentyFourHourChange: token.twentyFourHourChange,
+        athPrice: token.athPrice,
       }));
       setDatabaseTokens(tokens);
     } catch (error) {
@@ -187,6 +194,10 @@ export default function PortfolioView({ onBack, onSelectToken }: PortfolioViewPr
 
           if (balance > 0) {
             const usdValue = dbToken.price ? balance * dbToken.price : 0;
+            const athValue = dbToken.athPrice ? balance * dbToken.athPrice : 0;
+            const multiplier = dbToken.price && dbToken.athPrice && dbToken.price > 0
+              ? dbToken.athPrice / dbToken.price
+              : 1;
             portfolioHoldings.push({
               name: dbToken.name,
               symbol: dbToken.symbol,
@@ -196,6 +207,9 @@ export default function PortfolioView({ onBack, onSelectToken }: PortfolioViewPr
               price: dbToken.price,
               change24h: dbToken.twentyFourHourChange,
               logoUrl: dbToken.logoUrl,
+              athPrice: dbToken.athPrice,
+              athValue,
+              multiplier,
             });
           }
         } catch (error) {
@@ -335,7 +349,33 @@ export default function PortfolioView({ onBack, onSelectToken }: PortfolioViewPr
                 </span>
               )}
             </div>
+            {/* ATH Potential */}
+            {!loading && holdings.some(h => h.athValue && h.athValue > 0) && (
+              <div className="mt-3 flex items-center gap-3">
+                <span className="text-gray-500 text-sm">If ATH:</span>
+                <span className="text-emerald-400 font-bold text-lg">
+                  {formatUSD(holdings.reduce((sum, h) => sum + (h.athValue || h.usdValue), 0))}
+                </span>
+                <span className="text-emerald-400 text-sm">
+                  ({(holdings.reduce((sum, h) => sum + (h.athValue || h.usdValue), 0) / (totalBalance || 1)).toFixed(1)}x)
+                </span>
+              </div>
+            )}
           </div>
+          {/* Share Button */}
+          {!loading && holdings.length > 0 && (
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 text-emerald-400 rounded-lg hover:from-emerald-500/30 hover:to-cyan-500/30 transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+              Share
+            </button>
+          )}
         </div>
       </div>
 
@@ -625,6 +665,31 @@ export default function PortfolioView({ onBack, onSelectToken }: PortfolioViewPr
             </div>
           )}
         </div>
+      )}
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          data={{
+            type: 'portfolio',
+            totalCurrentValue: totalBalance,
+            totalAthValue: holdings.reduce((sum, h) => sum + (h.athValue || h.usdValue), 0),
+            totalMultiplier: holdings.reduce((sum, h) => sum + (h.athValue || h.usdValue), 0) / (totalBalance || 1),
+            holdings: holdings
+              .filter(h => h.athValue && h.athValue > 0)
+              .map(h => ({
+                symbol: h.symbol,
+                name: h.name,
+                logo: h.logoUrl,
+                currentValue: h.usdValue,
+                athValue: h.athValue || h.usdValue,
+                multiplier: h.multiplier || 1,
+              })),
+            walletAddress: publicKey?.toBase58(),
+          }}
+        />
       )}
     </div>
   );

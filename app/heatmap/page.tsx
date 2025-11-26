@@ -38,6 +38,15 @@ export default function HeatmapPage() {
   return (
     <MainLayout>
       <main className="w-full max-w-7xl mx-auto px-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        <button
+          onClick={() => router.push('/')}
+          className="flex items-center gap-2 mb-4 px-3 py-2 text-gray-400 hover:text-white transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span>Back to Home</span>
+        </button>
         {isLoading ? (
           <div className="flex items-center justify-center h-[600px]">
             <div className="flex flex-col items-center gap-3">
