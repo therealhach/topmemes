@@ -220,10 +220,10 @@ function MainLayoutContent({ children }: MainLayoutProps) {
 
           {/* Navigation Links - Category Filters */}
           {isHomePage && (
-            <nav className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+            <nav className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs">
               <Link
                 href={buildCategoryUrl('all')}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                className={`px-2 py-1 rounded-lg font-medium transition-all ${
                   categoryFilter === 'all'
                     ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
                     : 'text-gray-300 hover:text-white'
@@ -233,7 +233,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
               </Link>
               <Link
                 href={buildCategoryUrl('dogs')}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                className={`px-2 py-1 rounded-lg font-medium transition-all ${
                   categoryFilter === 'dogs'
                     ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
                     : 'text-gray-300 hover:text-white'
@@ -243,7 +243,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
               </Link>
               <Link
                 href={buildCategoryUrl('cats')}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                className={`px-2 py-1 rounded-lg font-medium transition-all ${
                   categoryFilter === 'cats'
                     ? 'bg-purple-500/20 text-purple-400 border border-purple-500/40'
                     : 'text-gray-300 hover:text-white'
@@ -252,8 +252,18 @@ function MainLayoutContent({ children }: MainLayoutProps) {
                 Cats
               </Link>
               <Link
+                href={buildCategoryUrl('frogs')}
+                className={`px-2 py-1 rounded-lg font-medium transition-all ${
+                  categoryFilter === 'frogs'
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/40'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+              >
+                Frogs
+              </Link>
+              <Link
                 href={buildCategoryUrl('ai')}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                className={`px-2 py-1 rounded-lg font-medium transition-all ${
                   categoryFilter === 'ai'
                     ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
                     : 'text-gray-300 hover:text-white'
@@ -263,7 +273,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
               </Link>
               <Link
                 href={buildCategoryUrl('others')}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                className={`px-2 py-1 rounded-lg font-medium transition-all ${
                   categoryFilter === 'others'
                     ? 'bg-teal-500/20 text-teal-400 border border-teal-500/40'
                     : 'text-gray-300 hover:text-white'

@@ -181,7 +181,7 @@ export async function getTokenPrice(tokenAddress: string): Promise<number | null
 }
 
 
-export type TokenCategory = 'dogs' | 'cats' | 'ai' | 'others';
+export type TokenCategory = 'dogs' | 'cats' | 'frogs' | 'ai' | 'others';
 
 export interface MemeTokenData {
   address: string;

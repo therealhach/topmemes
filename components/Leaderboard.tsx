@@ -60,7 +60,7 @@ interface LeaderboardCardProps {
 
 function LeaderboardCard({ title, icon, tokens, formatValue, valueColor, onTokenClick, onViewMore }: LeaderboardCardProps) {
   return (
-    <div className="bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-black/80 border border-cyan-500/20 rounded-lg p-3">
+    <div className="min-w-[200px] sm:min-w-0 flex-shrink-0 sm:flex-shrink bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-black/80 border border-cyan-500/20 rounded-lg p-3">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           {icon}
@@ -145,7 +145,7 @@ export default function Leaderboard({ tokens, onTokenClick, onViewGainersLosers,
   }, [tokens]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+    <div className="flex overflow-x-auto gap-3 mb-6 pb-2 scrollbar-hide sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible">
       <LeaderboardCard
         title="Top Gainers"
         icon={
