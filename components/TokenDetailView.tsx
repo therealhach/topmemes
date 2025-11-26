@@ -14,7 +14,7 @@ import {
 import PriceChart from './PriceChart';
 import ShareModal from './ShareModal';
 
-type TokenCategory = 'dogs' | 'cats' | 'ai' | 'others';
+type TokenCategory = 'dogs' | 'cats' | 'frogs' | 'ai' | 'others';
 
 interface TokenData {
   id: number;

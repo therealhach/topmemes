@@ -1,4 +1,4 @@
-export type TokenCategory = 'dogs' | 'cats' | 'ai' | 'others';
+export type TokenCategory = 'dogs' | 'cats' | 'frogs' | 'ai' | 'others';
 export type Chain = 'solana' | 'ethereum';
 
 export interface CachedToken {
