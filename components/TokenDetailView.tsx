@@ -106,7 +106,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
   const isWatchlisted = watchlist.some(item => item.address === token.address);
 
   const handleWatchlistToggle = () => {
-    toggleWatchlist(token.address, token.symbol);
+    toggleWatchlist(token.address);
     setWatchlist(loadWatchlist());
     // Dispatch event to update watchlist count in header
     window.dispatchEvent(new Event('watchlist-updated'));
