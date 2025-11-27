@@ -83,7 +83,7 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(20);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(40);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const isAdmin = publicKey?.toBase58() === ADMIN_WALLET;

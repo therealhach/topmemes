@@ -18,12 +18,12 @@
 # node scripts/add-multiple-tokens.js -c dogs --file tokens.txt
 
 #cats
-https://dexscreener.com/solana/a9eutfmmr4kszwjiebps9t6febrvc2f8t49pzlf8xiyi
-https://dexscreener.com/solana/9qgrqidhttpelr2dtpquqwvnbxvyeuhjndnk6k2sxfan
-https://dexscreener.com/solana/avicvyiggxnwfwxmz2bttzx5rn9ytb7qe4qef46b2mze
+
 #dogs
 
 #ai
 
+#frogs
+https://dexscreener.com/solana/9bgyzug6mpuy8dhujaskbguw87gzk7a8ygpgcsvangpx
 
 #others
