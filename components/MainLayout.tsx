@@ -501,42 +501,67 @@ function MainLayoutContent({ children }: MainLayoutProps) {
         {children}
 
         <footer className="mt-16 py-8 border-t border-gray-800/50">
-          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
-            <div className="flex items-center gap-2">
-              <span className="solana-gradient-text text-sm font-bold">Top Memes</span>
-              <span className="text-gray-500 text-xs">© 2025</span>
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+              {/* Brand */}
+              <div className="col-span-2 sm:col-span-1">
+                <span className="solana-gradient-text text-lg font-bold">Top Memes</span>
+                <p className="text-gray-500 text-xs mt-2">Track and trade Solana memecoins</p>
+                <div className="flex items-center gap-3 mt-3">
+                  <a href="https://x.com/topmemes_io" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              {/* Features */}
+              <div>
+                <h4 className="text-white text-sm font-semibold mb-3">Features</h4>
+                <div className="flex flex-col gap-2 text-xs">
+                  <Link href="/heatmap" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                    Heatmap
+                  </Link>
+                  <Link href="/paper-portfolio" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                    Paper Portfolio
+                  </Link>
+                  <Link href="/watchlist" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                    Watchlist
+                  </Link>
+                </div>
+              </div>
+
+              {/* Company */}
+              <div>
+                <h4 className="text-white text-sm font-semibold mb-3">Company</h4>
+                <div className="flex flex-col gap-2 text-xs">
+                  <Link href="/about" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                    About
+                  </Link>
+                  <Link href="/contact" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                    Contact
+                  </Link>
+                </div>
+              </div>
+
+              {/* Legal */}
+              <div>
+                <h4 className="text-white text-sm font-semibold mb-3">Legal</h4>
+                <div className="flex flex-col gap-2 text-xs">
+                  <Link href="/privacy" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                    Privacy Policy
+                  </Link>
+                  <Link href="/terms" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                    Terms of Service
+                  </Link>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <a href="https://x.com/topmemes_io" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-            </div>
-            <div className="flex items-center gap-3 text-xs">
-              <Link href="/heatmap" className="text-gray-500 hover:text-cyan-400 transition-colors">
-                Heatmap
-              </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/paper-portfolio" className="text-gray-500 hover:text-cyan-400 transition-colors">
-                Paper Portfolio
-              </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/about" className="text-gray-500 hover:text-cyan-400 transition-colors">
-                About
-              </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/contact" className="text-gray-500 hover:text-cyan-400 transition-colors">
-                Contact
-              </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/privacy" className="text-gray-500 hover:text-cyan-400 transition-colors">
-                Privacy Policy
-              </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/terms" className="text-gray-500 hover:text-cyan-400 transition-colors">
-                Terms of Service
-              </Link>
+
+            {/* Copyright */}
+            <div className="mt-8 pt-4 border-t border-gray-800/50 text-center">
+              <span className="text-gray-500 text-xs">© 2025 TopMemes.io. All rights reserved.</span>
             </div>
           </div>
           <div className="max-w-6xl mx-auto mt-6 px-4">
