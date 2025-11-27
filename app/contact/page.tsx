@@ -19,17 +19,25 @@ export default function ContactPage() {
     setErrorMessage('');
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          access_key: '0e968d88-6c27-4c97-bd6d-e73e3bb50904',
+          name: formData.name,
+          email: formData.email,
+          subject: `[TopMemes] ${formData.subject}`,
+          message: formData.message,
+        }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to send message');
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to send message');
       }
 
       setStatus('success');
