@@ -78,7 +78,7 @@ const formatTokenAmount = (amount: number): string => {
 
 export default function TokenDetailView({ token, onBack, allTokens, onTokenSelect }: TokenDetailViewProps) {
   const { connection } = useConnection();
-  const { publicKey, signTransaction, signAndSendTransaction, connected } = useWallet();
+  const { publicKey, signTransaction, wallet, connected } = useWallet();
 
   const [activeTab, setActiveTab] = useState<TabType>('buy');
   const [paymentCurrency, setPaymentCurrency] = useState<PaymentCurrency>('SOL');
@@ -225,6 +225,9 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
   };
 
   const handleSwap = async () => {
+    const walletAdapter = wallet?.adapter as any;
+    const signAndSendTransaction = walletAdapter?.signAndSendTransaction?.bind(walletAdapter);
+
     if (!quote || !publicKey || (!signTransaction && !signAndSendTransaction)) {
       setSwapStatus({ type: 'error', message: 'Please connect your wallet' });
       return;
