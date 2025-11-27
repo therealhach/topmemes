@@ -29,6 +29,10 @@ function MainLayoutContent({ children }: MainLayoutProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Array<{ name: string; symbol: string; address: string; logo?: string }>>([]);
+  const [allTokens, setAllTokens] = useState<Array<{ name: string; symbol: string; address: string; logo?: string }>>([]);
   const [stats, setStats] = useState<Stats>({
     totalMemes: 0,
     totalMarketCap: 0,
@@ -61,6 +65,14 @@ function MainLayoutContent({ children }: MainLayoutProps) {
         const totalMarketCap = tokens.reduce((sum, token) => sum + (token.currentMcap || 0), 0);
         const total24hVolume = tokens.reduce((sum, token) => sum + (token.twentyFourHourVolume || 0), 0);
 
+        // Store tokens for search
+        setAllTokens(tokens.map(t => ({
+          name: t.name,
+          symbol: t.symbol,
+          address: t.address,
+          logo: t.logo
+        })));
+
         const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana,ethereum&vs_currencies=usd');
         const priceData = await priceResponse.json();
         const solPrice = priceData?.solana?.usd || 0;
@@ -82,6 +94,37 @@ function MainLayoutContent({ children }: MainLayoutProps) {
     const interval = setInterval(fetchStats, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  // Filter tokens based on search query
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setSearchResults([]);
+      return;
+    }
+    const query = searchQuery.toLowerCase();
+    const filtered = allTokens.filter(
+      t => t.name.toLowerCase().includes(query) || t.symbol.toLowerCase().includes(query)
+    ).slice(0, 8);
+    setSearchResults(filtered);
+  }, [searchQuery, allTokens]);
+
+  // Close search on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        setSearchQuery('');
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  const handleTokenSelect = (address: string) => {
+    router.push(`/token/${address}`);
+    setSearchOpen(false);
+    setSearchQuery('');
+  };
 
   const formatLargeNumber = (num: number): string => {
     if (num >= 1000000000) {
@@ -371,6 +414,67 @@ function MainLayoutContent({ children }: MainLayoutProps) {
                 </Link>
               </>
             )}
+            {/* Search Button */}
+            <div className="relative">
+              <div className="w-px h-3 bg-gray-600 inline-block mr-1.5"></div>
+              <button
+                onClick={() => setSearchOpen(!searchOpen)}
+                className={`p-1.5 rounded transition-all ${
+                  searchOpen
+                    ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-800/50'
+                }`}
+                title="Search tokens"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+
+              {/* Search Dropdown */}
+              {searchOpen && (
+                <div className="absolute right-0 top-full mt-2 w-72 bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl z-[100]">
+                  <div className="p-2">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search tokens..."
+                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
+                      autoFocus
+                    />
+                  </div>
+                  {searchResults.length > 0 && (
+                    <div className="max-h-64 overflow-y-auto border-t border-gray-700">
+                      {searchResults.map((token) => (
+                        <button
+                          key={token.address}
+                          onClick={() => handleTokenSelect(token.address)}
+                          className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-800 transition-colors text-left"
+                        >
+                          {token.logo ? (
+                            <img src={token.logo} alt={token.symbol} className="w-6 h-6 rounded-full" />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-400">
+                              {token.symbol.charAt(0)}
+                            </div>
+                          )}
+                          <div>
+                            <div className="text-sm text-white font-medium">{token.name}</div>
+                            <div className="text-xs text-gray-400">{token.symbol}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {searchQuery && searchResults.length === 0 && (
+                    <div className="px-3 py-4 text-sm text-gray-400 text-center border-t border-gray-700">
+                      No tokens found
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </header>
 

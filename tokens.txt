@@ -26,5 +26,7 @@
 
 
 #others
-https://dexscreener.com/ethereum/0x318ba85ca49a3b12d3cf9c72cc72b29316971802
-https://dexscreener.com/ethereum/0x32c6d4f8c4e905f0218d2e8dca7e56d3d0acff09
+https://dexscreener.com/solana/hgrvezf83hm2x5hovx9ec2cbiajtmwfhk6vcuplh4ydy
+https://dexscreener.com/solana/6hfajiuutxfzefmdkqsnbvfe6i95nh2wuvj5dwmf7gtw
+https://dexscreener.com/solana/5wnu5qhdprgrl37ffcd6tmmqzugqgxwafgz477rshthy
+https://dexscreener.com/solana/t5mzpkou42yf3ssrqyrxfjzdl4zvbkg8u1hxqbfdyoo

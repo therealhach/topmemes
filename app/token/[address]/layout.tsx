@@ -1,77 +1,74 @@
 import { Metadata } from 'next';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseServer } from '@/lib/supabase';
+import { Database } from '@/lib/database.types';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+type TokenRow = Database['public']['Tables']['tokens']['Row'];
 
 type Props = {
   params: Promise<{ address: string }>;
+  children: React.ReactNode;
 };
+
+// Fetch token data server-side
+async function getTokenData(address: string): Promise<TokenRow | null> {
+  const supabase = getSupabaseServer();
+
+  if (!supabase) {
+    return null;
+  }
+
+  const { data } = await supabase
+    .from('tokens')
+    .select('*')
+    .eq('token_address', address)
+    .single();
+
+  return data;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { address } = await params;
-  const baseUrl = 'https://www.topmemes.io';
+  const tokenData = await getTokenData(address);
 
-  try {
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    const { data: token } = await supabase
-      .from('tokens')
-      .select('token_name, token_symbol, logo_url')
-      .eq('token_address', address)
-      .single();
+  const tokenName = tokenData?.token_name || 'Unknown Token';
+  const tokenSymbol = tokenData?.token_symbol || 'UNKNOWN';
+  const siteUrl = 'https://www.topmemes.io';
+  const ogImageUrl = `${siteUrl}/api/og/token?address=${address}`;
 
-    if (token) {
-      const title = `${token.token_name} (${token.token_symbol}) Price, Chart & Info`;
-      const description = `Live ${token.token_name} (${token.token_symbol}) price chart, market cap, trading volume, and analytics. Swap ${token.token_symbol} on Solana via Jupiter DEX.`;
+  const title = `${tokenName} (${tokenSymbol}) Price & Chart`;
+  const description = `Track ${tokenName} ($${tokenSymbol}) live price, market cap, volume, and chart on TopMemes.io. Real-time memecoin analytics and trading.`;
 
-      return {
-        title,
-        description,
-        keywords: [
-          token.token_name,
-          token.token_symbol,
-          `${token.token_symbol} price`,
-          `${token.token_symbol} chart`,
-          `${token.token_name} memecoin`,
-          `buy ${token.token_symbol}`,
-          'solana token',
-          'memecoin',
-        ],
-        openGraph: {
-          title,
-          description,
-          url: `${baseUrl}/token/${address}`,
-          images: token.logo_url ? [{ url: token.logo_url, alt: token.token_name }] : undefined,
-        },
-        twitter: {
-          card: 'summary',
-          title: `${token.token_name} (${token.token_symbol}) - Live Price & Chart`,
-          description,
-          images: token.logo_url ? [token.logo_url] : undefined,
-        },
-        alternates: {
-          canonical: `${baseUrl}/token/${address}`,
-        },
-      };
-    }
-  } catch (error) {
-    console.error('Error generating metadata:', error);
-  }
-
-  // Fallback metadata
   return {
-    title: 'Token Details',
-    description: 'View token price, chart, and trading information on TopMemes.io',
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/token/${address}`,
+      siteName: 'TopMemes.io',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${tokenName} (${tokenSymbol}) - TopMemes.io`,
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+      creator: '@topmemes_io',
+    },
     alternates: {
-      canonical: `${baseUrl}/token/${address}`,
+      canonical: `${siteUrl}/token/${address}`,
     },
   };
 }
 
-export default function TokenLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function TokenLayout({ children }: Props) {
   return children;
 }
