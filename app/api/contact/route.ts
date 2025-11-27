@@ -1,0 +1,65 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { name, email, subject, message } = body;
+
+    // Validate required fields
+    if (!name || !email || !subject || !message) {
+      return NextResponse.json(
+        { error: 'All fields are required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email address' },
+        { status: 400 }
+      );
+    }
+
+    const web3formsKey = process.env.WEB3FORMS_KEY;
+
+    if (!web3formsKey) {
+      console.error('WEB3FORMS_KEY not configured');
+      return NextResponse.json(
+        { error: 'Contact form is not configured. Please reach out on X.' },
+        { status: 500 }
+      );
+    }
+
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        access_key: web3formsKey,
+        name,
+        email,
+        subject: `[TopMemes] ${subject}`,
+        message,
+        from_name: 'TopMemes Contact Form',
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      console.error('Web3Forms error:', data);
+      throw new Error(data.message || 'Failed to send email');
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Contact form error:', error);
+    return NextResponse.json(
+      { error: 'Failed to send message. Please try again or contact us on X.' },
+      { status: 500 }
+    );
+  }
+}

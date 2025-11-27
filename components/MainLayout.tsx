@@ -522,6 +522,14 @@ function MainLayoutContent({ children }: MainLayoutProps) {
                 Paper Portfolio
               </Link>
               <span className="text-gray-600">|</span>
+              <Link href="/about" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                About
+              </Link>
+              <span className="text-gray-600">|</span>
+              <Link href="/contact" className="text-gray-500 hover:text-cyan-400 transition-colors">
+                Contact
+              </Link>
+              <span className="text-gray-600">|</span>
               <Link href="/privacy" className="text-gray-500 hover:text-cyan-400 transition-colors">
                 Privacy Policy
               </Link>
