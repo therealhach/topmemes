@@ -149,6 +149,10 @@ REPOSITORY:
 Our codebase is fully open source: https://github.com/therealhach/topmemes
 
 TRANSACTION EXAMPLES:
+NEW TX after Implmentation of signAndSendTransaction: 
+https://solscan.io/tx/4oe9pXbRtnmAtT1PEMYDffxuRjcm7fZYZW1QnQNN3MD87ZdnCHeprCjCEzLmnFBjVfgL29Rv1W473RtefPja7mAA
+
+OLD TX Before signAndSendTransaction Implmentation:
 https://solscan.io/tx/2M8cqzyumRmPeEpBUtpGDhxGqmwChheeVbgWkhbU1RYdgxcpsxfaoDD3BQfBT57zHQKksUuRUcBW4DJDwKaEUBRE
 https://solscan.io/tx/2JCugtYa7DokkdFrTgz5E4tkdRk5cYzh7L2Rk9dLJQ84fP55nCEkrV6nFEskQAkAK7j1bSpKG45mLyhjiithmoVu
 https://solscan.io/tx/AEEuj7vsHpj3vDDWgcM9wY6gVNbQw59uxBsppn3y3xNt6qZnaeLN8G399t9v4y3i5i7TGBiFqowhrUzwLaGULJ2

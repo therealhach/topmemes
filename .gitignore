@@ -41,7 +41,7 @@ yarn-error.log*
 .env.production.local
 tokens.txt
 forms.txt
-
+forms_answers.txt
 
 # vercel
 .vercel
