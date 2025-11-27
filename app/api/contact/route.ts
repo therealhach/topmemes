@@ -22,15 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const web3formsKey = process.env.WEB3FORMS_KEY;
-
-    if (!web3formsKey) {
-      console.error('WEB3FORMS_KEY not configured');
-      return NextResponse.json(
-        { error: 'Contact form is not configured. Please reach out on X.' },
-        { status: 500 }
-      );
-    }
+    const web3formsKey = process.env.WEB3FORMS_KEY || '0e968d88-6c27-4c97-bd6d-e73e3bb50904';
 
     const response = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
