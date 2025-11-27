@@ -40,6 +40,8 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 tokens.txt
+forms.txt
+
 
 # vercel
 .vercel

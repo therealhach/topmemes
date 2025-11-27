@@ -74,7 +74,7 @@ const formatTokenAmount = (amount: number): string => {
 
 export default function TokenDetailModal({ token, onClose, allTokens }: TokenDetailModalProps) {
   const { connection } = useConnection();
-  const { publicKey, signTransaction, connected } = useWallet();
+  const { publicKey, signTransaction, signAndSendTransaction, connected } = useWallet();
 
   const [activeTab, setActiveTab] = useState<TabType>('buy');
   const [paymentCurrency, setPaymentCurrency] = useState<PaymentCurrency>('USDC');
@@ -183,7 +183,7 @@ export default function TokenDetailModal({ token, onClose, allTokens }: TokenDet
   };
 
   const handleSwap = async () => {
-    if (!quote || !publicKey || !signTransaction) {
+    if (!quote || !publicKey || (!signTransaction && !signAndSendTransaction)) {
       alert('Please connect your wallet');
       return;
     }
@@ -201,11 +201,11 @@ export default function TokenDetailModal({ token, onClose, allTokens }: TokenDet
         throw new Error('Failed to get swap transaction');
       }
 
-      // Execute swap
+      // Execute swap - prefer signAndSendTransaction if available
       const txid = await executeSwap(
         connection,
         swapTransaction,
-        { signTransaction }
+        { signTransaction, signAndSendTransaction }
       );
 
       alert(`Swap successful! Transaction: ${txid}`);
