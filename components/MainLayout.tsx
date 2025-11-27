@@ -70,7 +70,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
           name: t.name,
           symbol: t.symbol,
           address: t.address,
-          logo: t.logo
+          logo: t.logoUrl
         })));
 
         const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana,ethereum&vs_currencies=usd');
