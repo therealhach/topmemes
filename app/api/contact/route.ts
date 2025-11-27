@@ -22,26 +22,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const web3formsKey = process.env.WEB3FORMS_KEY || '0e968d88-6c27-4c97-bd6d-e73e3bb50904';
+    const web3formsKey = '0e968d88-6c27-4c97-bd6d-e73e3bb50904';
+
+    const formData = new FormData();
+    formData.append('access_key', web3formsKey);
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('subject', `[TopMemes] ${subject}`);
+    formData.append('message', message);
+    formData.append('from_name', 'TopMemes Contact Form');
 
     const response = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        access_key: web3formsKey,
-        name,
-        email,
-        subject: `[TopMemes] ${subject}`,
-        message,
-        from_name: 'TopMemes Contact Form',
-      }),
+      body: formData,
     });
 
     const data = await response.json();
 
-    if (!data.success) {
+    if (!response.ok || !data.success) {
       console.error('Web3Forms error:', data);
       throw new Error(data.message || 'Failed to send email');
     }
