@@ -219,12 +219,10 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
         const data = await response.json();
         if (data.solana && data.solana.usd) {
           setSolPrice(data.solana.usd);
-          return;
         }
       }
-      setSolPrice(230); // Fallback price
     } catch {
-      setSolPrice(230); // Fallback price
+      // CoinGecko rate limited, price stays at 0
     }
   };
 

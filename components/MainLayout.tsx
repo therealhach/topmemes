@@ -91,9 +91,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
             ethPrice = priceData?.ethereum?.usd || 0;
           }
         } catch {
-          // CoinGecko rate limited, use fallback
-          solPrice = 230;
-          ethPrice = 3500;
+          // CoinGecko rate limited, prices stay at 0
         }
 
         setStats({
