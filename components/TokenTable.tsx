@@ -23,6 +23,9 @@ export interface TokenData {
   category: TokenCategory;
   liquidity?: number;
   chain?: 'solana' | 'ethereum';
+  twitterUrl?: string;
+  telegramUrl?: string;
+  websiteUrl?: string;
 }
 
 const ADMIN_WALLET = '7enA39APuzDhDD1da7nVmg1DjzJrVULBHN579VGEzFNUx';

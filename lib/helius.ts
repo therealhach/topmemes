@@ -231,6 +231,9 @@ export interface MemeTokenData {
   liquidity: number;
   category: TokenCategory;
   chain: Chain;
+  twitterUrl?: string;
+  telegramUrl?: string;
+  websiteUrl?: string;
 }
 
 // Batch fetch market data from DexScreener (up to 30 pairs per request)
@@ -355,6 +358,9 @@ export async function getMemeTokensData(): Promise<MemeTokenData[]> {
         liquidity: marketData?.liquidity || 0,
         category: (dbToken.category as TokenCategory) || 'others',
         chain: chain,
+        twitterUrl: dbToken.twitter_url || undefined,
+        telegramUrl: dbToken.telegram_url || undefined,
+        websiteUrl: dbToken.website_url || undefined,
       };
     });
 

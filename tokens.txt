@@ -18,28 +18,14 @@
 # node scripts/add-multiple-tokens.js -c dogs --file tokens.txt
 
 #cats
-https://dexscreener.com/solana/3oefnixw6csxtymen7wtcjeeaivgsabniwcmgqczb6ik,0.076
-https://dexscreener.com/solana/a6hd5bu6mnf6sfceq5vduhchivurgujwksmmvroqjn5z,0.015
-https://dexscreener.com/solana/5aghe4ubd4eo59ftxwmi7d8hafs3zpvn2ht8utst1r8g,0.025
-https://dexscreener.com/solana/j333lz5uhejwxb64dcd756viufxr164dvnxqpxumph9v,0.075
-https://dexscreener.com/solana/2h87wihp7gmcbgodhrtzgmvc3myqex1xpcgdovuhnqhj,0.0149
 
 #dogs
-https://dexscreener.com/solana/6pcjndxqq4yikwgvd12bsptgmijhe5qze7umuans73er,0.036
-https://dexscreener.com/solana/dfwtdd9k8vpfcc5dqjfnijnncuqvsgm13c7avkbzzxyh,0.120
-https://dexscreener.com/solana/25txtutlkjtcux3kqoervc7aubym7fckbwovqnqnydgq,0.030
+
 #ai
 
 #frogs
-https://dexscreener.com/solana/9snveneavwqzhofvbrvy5zb9pudkugxu8gvjqrt6ddvj,0.020
-https://dexscreener.com/solana/4immdwqcvjpqpdamedm2pzbrppr2nbbavh2p3wtqxufg,0.0043
+https://dexscreener.com/solana/gdfcd7l8x1giudfz1wthnheb352k3ni37rswtjgmglpt,0.00940
 
 
 #others
-https://dexscreener.com/solana/hrspqdhwcrzqpwottvwkwbpectcc2tf8enetqznnuzx,0.019
-https://dexscreener.com/solana/a9klss9modwzmc1a189c6hxwy1qkguupun9tpjzkhmaw,0.031
-https://dexscreener.com/solana/ekv9hdumwqnxzgq5g6ge6bk1zrhkxyc2wnsfl94sqmlj,0.075
-https://dexscreener.com/solana/bax9m9a5fvy5cniewwnuwkvdzhsg9psznb4fj9r677tn,0.075
-https://dexscreener.com/solana/pvrnmkxryybjzfsyb7qfqvudb9vec5pxxtr2sdktwzz,0.029
-https://dexscreener.com/solana/hlqgegqdnmrthfxyai3imgezzy3nefv1e5dg8ubf4ksw,0.068
-https://dexscreener.com/solana/gvdbhjocyfdzugwqkm4zu89w2yxavladwduxejhr9h8s,0.035
+https://dexscreener.com/solana/7rqd8fhc1rimv3v9edcrz6rnfsjn1puxm9umjaurjrnj,0.09299
