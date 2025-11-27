@@ -534,7 +534,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
 
               {/* Company */}
               <div>
-                <h4 className="text-white text-sm font-semibold mb-3">Company</h4>
+                <h4 className="text-white text-sm font-semibold mb-3">More of us</h4>
                 <div className="flex flex-col gap-2 text-xs">
                   <Link href="/about" className="text-gray-500 hover:text-cyan-400 transition-colors">
                     About
