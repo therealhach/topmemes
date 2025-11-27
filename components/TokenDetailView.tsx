@@ -215,13 +215,16 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
   const fetchSolPrice = async () => {
     try {
       const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
-      const data = await response.json();
-      if (data.solana && data.solana.usd) {
-        setSolPrice(data.solana.usd);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.solana && data.solana.usd) {
+          setSolPrice(data.solana.usd);
+          return;
+        }
       }
-    } catch (error) {
-      console.error('Error fetching SOL price:', error);
-      setSolPrice(150);
+      setSolPrice(230); // Fallback price
+    } catch {
+      setSolPrice(230); // Fallback price
     }
   };
 

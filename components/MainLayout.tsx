@@ -81,10 +81,20 @@ function MainLayoutContent({ children }: MainLayoutProps) {
           logo: t.logoUrl
         })));
 
-        const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana,ethereum&vs_currencies=usd');
-        const priceData = await priceResponse.json();
-        const solPrice = priceData?.solana?.usd || 0;
-        const ethPrice = priceData?.ethereum?.usd || 0;
+        let solPrice = 0;
+        let ethPrice = 0;
+        try {
+          const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana,ethereum&vs_currencies=usd');
+          if (priceResponse.ok) {
+            const priceData = await priceResponse.json();
+            solPrice = priceData?.solana?.usd || 0;
+            ethPrice = priceData?.ethereum?.usd || 0;
+          }
+        } catch {
+          // CoinGecko rate limited, use fallback
+          solPrice = 230;
+          ethPrice = 3500;
+        }
 
         setStats({
           totalMemes: tokens.length,
