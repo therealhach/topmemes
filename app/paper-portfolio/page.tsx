@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { toPng } from 'html-to-image';
 import MainLayout from '@/components/MainLayout';
 import { getMemeTokensData, MemeTokenData } from '@/lib/helius';
 
@@ -38,9 +40,10 @@ export default function PaperPortfolioPage() {
   const [holdings, setHoldings] = useState<PaperHolding[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedToken, setSelectedToken] = useState<MemeTokenData | null>(null);
-  const [allocationAmount, setAllocationAmount] = useState('');
+  const [allocationInputs, setAllocationInputs] = useState<Record<string, string>>({});
+  const shareCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -58,34 +61,30 @@ export default function PaperPortfolioPage() {
     fetchData();
   }, []);
 
-  const filteredTokens = tokens.filter(t =>
+  // Filter tokens not already in portfolio
+  const availableTokens = tokens.filter(t =>
+    !holdings.some(h => h.tokenAddress === t.address)
+  );
+
+  const filteredTokens = availableTokens.filter(t =>
     t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     t.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-  ).slice(0, 10);
+  );
 
-  const handleAddHolding = () => {
-    if (!selectedToken || !allocationAmount) return;
-    const amount = parseFloat(allocationAmount);
+  const handleAddToken = (token: MemeTokenData) => {
+    const amount = parseFloat(allocationInputs[token.address] || '0');
     if (isNaN(amount) || amount <= 0) return;
 
-    const existingIndex = holdings.findIndex(h => h.tokenAddress === selectedToken.address);
-    let newHoldings: PaperHolding[];
-
-    if (existingIndex >= 0) {
-      // Update existing holding
-      newHoldings = [...holdings];
-      newHoldings[existingIndex].allocation += amount;
-    } else {
-      // Add new holding
-      newHoldings = [...holdings, { tokenAddress: selectedToken.address, allocation: amount }];
-    }
-
+    const newHoldings = [...holdings, { tokenAddress: token.address, allocation: amount }];
     setHoldings(newHoldings);
     savePaperPortfolio({ holdings: newHoldings });
-    setShowAddModal(false);
-    setSelectedToken(null);
-    setAllocationAmount('');
-    setSearchQuery('');
+
+    // Clear the input for this token
+    setAllocationInputs(prev => {
+      const updated = { ...prev };
+      delete updated[token.address];
+      return updated;
+    });
   };
 
   const handleRemoveHolding = (tokenAddress: string) => {
@@ -118,6 +117,53 @@ export default function PaperPortfolioPage() {
     return sum + (h.allocation * multiplier);
   }, 0);
 
+  // Get sorted holdings data for sharing
+  const sortedHoldingsData = holdings
+    .map((holding) => {
+      const token = getTokenData(holding.tokenAddress);
+      if (!token) return null;
+      const multiplier = token.athPrice && token.price ? token.athPrice / token.price : 1;
+      const athReturn = holding.allocation * multiplier;
+      return { holding, token, multiplier, athReturn };
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null)
+    .sort((a, b) => b.athReturn - a.athReturn);
+
+  const handleDownloadImage = async () => {
+    if (!shareCardRef.current) return;
+    try {
+      const dataUrl = await toPng(shareCardRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: '#0f172a'
+      });
+      const link = document.createElement('a');
+      link.download = 'paper-portfolio.png';
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Error generating image:', error);
+    }
+  };
+
+  const handleCopyImage = async () => {
+    if (!shareCardRef.current) return;
+    try {
+      const dataUrl = await toPng(shareCardRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: '#0f172a'
+      });
+      const blob = await fetch(dataUrl).then(res => res.blob());
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]);
+      alert('Image copied to clipboard!');
+    } catch (error) {
+      console.error('Error copying image:', error);
+    }
+  };
+
   return (
     <MainLayout>
       <div className="w-full max-w-6xl mx-auto animate-fade-in-up">
@@ -127,15 +173,28 @@ export default function PaperPortfolioPage() {
             <h1 className="text-2xl font-bold text-white">Paper Portfolio</h1>
             <p className="text-sm text-gray-400 mt-1">Track potential returns if tokens reach ATH</p>
           </div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white text-sm font-semibold rounded-lg transition-all"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            Add Token
-          </button>
+          <div className="flex items-center gap-2">
+            {holdings.length > 0 && (
+              <button
+                onClick={() => setShowShareModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold rounded-lg transition-all border border-gray-600"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share
+              </button>
+            )}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white text-sm font-semibold rounded-lg transition-all"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Token
+            </button>
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -177,65 +236,70 @@ export default function PaperPortfolioPage() {
           <div className="bg-gray-900/50 border border-gray-700 rounded-lg overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-700 text-xs text-gray-400">
-                  <th className="text-left py-3 px-4">Token</th>
-                  <th className="text-right py-3 px-4">Price</th>
-                  <th className="text-right py-3 px-4">ATH Price</th>
-                  <th className="text-right py-3 px-4">Allocation</th>
-                  <th className="text-right py-3 px-4">ATH Return</th>
-                  <th className="text-right py-3 px-4"></th>
+                <tr className="border-b border-gray-700 text-[10px] text-gray-400">
+                  <th className="text-left py-1.5 px-2">Token</th>
+                  <th className="text-right py-1.5 px-2">Price</th>
+                  <th className="text-right py-1.5 px-2">ATH Price</th>
+                  <th className="text-right py-1.5 px-2">Allocation</th>
+                  <th className="text-right py-1.5 px-2">ATH Return</th>
+                  <th className="text-right py-1.5 px-2"></th>
                 </tr>
               </thead>
               <tbody>
-                {holdings.map((holding) => {
-                  const token = getTokenData(holding.tokenAddress);
-                  if (!token) return null;
-
-                  const multiplier = token.athPrice && token.price ? token.athPrice / token.price : 1;
-                  const athReturn = holding.allocation * multiplier;
+                {holdings
+                  .map((holding) => {
+                    const token = getTokenData(holding.tokenAddress);
+                    if (!token) return null;
+                    const multiplier = token.athPrice && token.price ? token.athPrice / token.price : 1;
+                    const athReturn = holding.allocation * multiplier;
+                    return { holding, token, multiplier, athReturn };
+                  })
+                  .filter((item): item is NonNullable<typeof item> => item !== null)
+                  .sort((a, b) => b.athReturn - a.athReturn)
+                  .map(({ holding, token, multiplier, athReturn }) => {
                   const percentFromATH = token.athPrice && token.price
                     ? ((token.athPrice - token.price) / token.athPrice) * 100
                     : 0;
 
                   return (
                     <tr key={holding.tokenAddress} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
+                      <td className="py-1.5 px-2">
+                        <div className="flex items-center gap-2">
                           {token.logoUrl ? (
-                            <img src={token.logoUrl} alt={token.symbol} className="w-8 h-8 rounded-full" />
+                            <img src={token.logoUrl} alt={token.symbol} className="w-5 h-5 rounded-full" />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-400">
+                            <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center text-[9px] text-gray-400">
                               {token.symbol.charAt(0)}
                             </div>
                           )}
                           <div>
-                            <div className="text-white font-medium">{token.name}</div>
-                            <div className="text-xs text-gray-400">{token.symbol}</div>
+                            <div className="text-white font-medium text-xs">{token.name}</div>
+                            <div className="text-[10px] text-gray-400">{token.symbol}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="text-white">{formatPrice(token.price)}</div>
-                        <div className="text-xs text-red-400">-{percentFromATH.toFixed(1)}% from ATH</div>
+                      <td className="py-1.5 px-2 text-right">
+                        <div className="text-white text-xs">{formatPrice(token.price)}</div>
+                        <div className="text-[10px] text-red-400">-{percentFromATH.toFixed(1)}% from ATH</div>
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="text-amber-400">{formatPrice(token.athPrice)}</div>
-                        <div className="text-xs text-gray-400">{multiplier.toFixed(1)}x potential</div>
+                      <td className="py-1.5 px-2 text-right">
+                        <div className="text-amber-400 text-xs">{formatPrice(token.athPrice)}</div>
+                        <div className="text-[10px] text-gray-400">{multiplier.toFixed(1)}x potential</div>
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="text-white">{formatCurrency(holding.allocation)}</div>
+                      <td className="py-1.5 px-2 text-right">
+                        <div className="text-white text-xs">{formatCurrency(holding.allocation)}</div>
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="text-emerald-400 font-semibold">{formatCurrency(athReturn)}</div>
-                        <div className="text-xs text-emerald-400/70">+{((multiplier - 1) * 100).toFixed(0)}%</div>
+                      <td className="py-1.5 px-2 text-right">
+                        <div className="text-emerald-400 font-semibold text-xs">{formatCurrency(athReturn)}</div>
+                        <div className="text-[10px] text-emerald-400/70">+{((multiplier - 1) * 100).toFixed(0)}%</div>
                       </td>
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-1.5 px-2 text-right">
                         <button
                           onClick={() => handleRemoveHolding(holding.tokenAddress)}
-                          className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded transition-all"
+                          className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded transition-all"
                           title="Remove"
                         >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
@@ -248,18 +312,17 @@ export default function PaperPortfolioPage() {
           </div>
         )}
 
-        {/* Add Token Modal */}
-        {showAddModal && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md">
+        {/* Add Token Modal - rendered via portal */}
+        {showAddModal && createPortal(
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] p-4">
+            <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-4xl max-h-[70vh] flex flex-col">
               <div className="flex items-center justify-between p-4 border-b border-gray-700">
                 <h2 className="text-lg font-semibold text-white">Add Token to Paper Portfolio</h2>
                 <button
                   onClick={() => {
                     setShowAddModal(false);
-                    setSelectedToken(null);
-                    setAllocationAmount('');
                     setSearchQuery('');
+                    setAllocationInputs({});
                   }}
                   className="text-gray-400 hover:text-white transition-colors"
                 >
@@ -269,120 +332,228 @@ export default function PaperPortfolioPage() {
                 </button>
               </div>
 
-              <div className="p-4 space-y-4">
-                {/* Token Search */}
-                {!selectedToken ? (
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-2">Search Token</label>
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search by name or symbol..."
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
-                      autoFocus
-                    />
-                    {searchQuery && filteredTokens.length > 0 && (
-                      <div className="mt-2 max-h-48 overflow-y-auto bg-gray-800 border border-gray-600 rounded-lg">
-                        {filteredTokens.map((token) => (
-                          <button
-                            key={token.address}
-                            onClick={() => {
-                              setSelectedToken(token);
-                              setSearchQuery('');
-                            }}
-                            className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-700 transition-colors text-left"
-                          >
-                            {token.logoUrl ? (
-                              <img src={token.logoUrl} alt={token.symbol} className="w-6 h-6 rounded-full" />
-                            ) : (
-                              <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-xs text-gray-400">
-                                {token.symbol.charAt(0)}
+              {/* Search */}
+              <div className="p-4 border-b border-gray-700">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search tokens..."
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
+                  autoFocus
+                />
+              </div>
+
+              {/* Token Table */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar custom-scrollbar-cyan">
+                <table className="w-full">
+                  <thead className="sticky top-0 bg-gray-900">
+                    <tr className="text-[10px] text-gray-400 border-b border-gray-700">
+                      <th className="text-left py-1.5 px-2">Token</th>
+                      <th className="text-right py-1.5 px-2">Price</th>
+                      <th className="text-right py-1.5 px-2">ATH</th>
+                      <th className="text-right py-1.5 px-2">Potential</th>
+                      <th className="text-right py-1.5 px-2 w-28">Allocation ($)</th>
+                      <th className="text-right py-1.5 px-2 w-16"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTokens.map((token) => {
+                      const multiplier = token.athPrice && token.price ? token.athPrice / token.price : 1;
+                      const inputValue = allocationInputs[token.address] || '';
+                      const athReturn = inputValue ? parseFloat(inputValue) * multiplier : 0;
+
+                      return (
+                        <tr key={token.address} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
+                          <td className="py-1.5 px-2">
+                            <div className="flex items-center gap-2">
+                              {token.logoUrl ? (
+                                <img src={token.logoUrl} alt={token.symbol} className="w-5 h-5 rounded-full" />
+                              ) : (
+                                <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center text-[9px] text-gray-400">
+                                  {token.symbol.charAt(0)}
+                                </div>
+                              )}
+                              <div>
+                                <div className="text-white font-medium text-xs">{token.name}</div>
+                                <div className="text-[10px] text-gray-400">{token.symbol}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-1.5 px-2 text-right text-xs text-white">
+                            {formatPrice(token.price)}
+                          </td>
+                          <td className="py-1.5 px-2 text-right text-xs text-amber-400">
+                            {formatPrice(token.athPrice)}
+                          </td>
+                          <td className="py-1.5 px-2 text-right text-xs text-emerald-400">
+                            {multiplier.toFixed(1)}x
+                          </td>
+                          <td className="py-1.5 px-2 text-right">
+                            <input
+                              type="number"
+                              value={inputValue}
+                              onChange={(e) => setAllocationInputs(prev => ({
+                                ...prev,
+                                [token.address]: e.target.value
+                              }))}
+                              placeholder="0"
+                              className="w-20 px-1.5 py-0.5 bg-gray-800 border border-gray-600 rounded text-xs text-white text-right focus:outline-none focus:border-cyan-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              min="0"
+                              step="any"
+                            />
+                            {athReturn > 0 && (
+                              <div className="text-[10px] text-emerald-400 mt-0.5">
+                                → {formatCurrency(athReturn)}
                               </div>
                             )}
-                            <div>
-                              <div className="text-sm text-white">{token.name}</div>
-                              <div className="text-xs text-gray-400">{token.symbol}</div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-2">Selected Token</label>
-                    <div className="flex items-center justify-between bg-gray-800 border border-gray-600 rounded-lg p-3">
-                      <div className="flex items-center gap-3">
-                        {selectedToken.logoUrl ? (
-                          <img src={selectedToken.logoUrl} alt={selectedToken.symbol} className="w-8 h-8 rounded-full" />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-sm text-gray-400">
-                            {selectedToken.symbol.charAt(0)}
-                          </div>
-                        )}
-                        <div>
-                          <div className="text-white font-medium">{selectedToken.name}</div>
-                          <div className="text-xs text-gray-400">{selectedToken.symbol}</div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => setSelectedToken(null)}
-                        className="text-gray-400 hover:text-white text-sm"
-                      >
-                        Change
-                      </button>
-                    </div>
-                    <div className="mt-2 text-xs text-gray-400">
-                      Current: {formatPrice(selectedToken.price)} | ATH: {formatPrice(selectedToken.athPrice)} | {selectedToken.athPrice && selectedToken.price ? (selectedToken.athPrice / selectedToken.price).toFixed(1) : 1}x potential
-                    </div>
-                  </div>
-                )}
-
-                {/* Allocation Amount */}
-                {selectedToken && (
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-2">Allocation (USD)</label>
-                    <input
-                      type="number"
-                      value={allocationAmount}
-                      onChange={(e) => setAllocationAmount(e.target.value)}
-                      placeholder="Enter amount in USD"
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
-                      min="0"
-                      step="any"
-                    />
-                    {allocationAmount && selectedToken.athPrice && selectedToken.price && (
-                      <div className="mt-2 text-sm text-emerald-400">
-                        ATH Return: {formatCurrency(parseFloat(allocationAmount) * (selectedToken.athPrice / selectedToken.price))}
-                      </div>
-                    )}
+                          </td>
+                          <td className="py-1.5 px-2 text-right">
+                            <button
+                              onClick={() => handleAddToken(token)}
+                              disabled={!inputValue || parseFloat(inputValue) <= 0}
+                              className="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded text-[10px] font-medium hover:bg-cyan-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              Add
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {filteredTokens.length === 0 && (
+                  <div className="py-12 text-center text-gray-400">
+                    {availableTokens.length === 0 ? 'All tokens already added' : 'No tokens found'}
                   </div>
                 )}
               </div>
 
-              <div className="flex gap-3 p-4 border-t border-gray-700">
+              {/* Footer */}
+              <div className="p-4 border-t border-gray-700">
                 <button
                   onClick={() => {
                     setShowAddModal(false);
-                    setSelectedToken(null);
-                    setAllocationAmount('');
                     setSearchQuery('');
+                    setAllocationInputs({});
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg font-medium hover:bg-gray-700 transition-all"
+                  className="w-full px-4 py-2 bg-gray-800 text-gray-300 rounded-lg font-medium hover:bg-gray-700 transition-all"
                 >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAddHolding}
-                  disabled={!selectedToken || !allocationAmount || parseFloat(allocationAmount) <= 0}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg font-medium hover:from-teal-600 hover:to-cyan-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Add to Portfolio
+                  Done
                 </button>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
+        )}
+
+        {/* Share Modal */}
+        {showShareModal && createPortal(
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+            <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg flex flex-col">
+              <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                <h2 className="text-lg font-semibold text-white">Share Portfolio</h2>
+                <button
+                  onClick={() => setShowShareModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Share Card Preview */}
+              <div className="p-4 overflow-auto max-h-[60vh]">
+                <div
+                  ref={shareCardRef}
+                  className="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 rounded-xl p-5 border border-gray-700"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Believe in Something</h3>
+                      <p className="text-xs text-gray-400">topmemes.io</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-[10px] text-gray-400">If tokens hit ATH</div>
+                      <div className="text-lg font-bold text-emerald-400">{formatCurrency(totalATHReturn)}</div>
+                    </div>
+                  </div>
+
+                  {/* Summary */}
+                  <div className="grid grid-cols-3 gap-2 mb-4 p-3 bg-gray-800/50 rounded-lg">
+                    <div className="text-center">
+                      <div className="text-[10px] text-gray-400">Tokens</div>
+                      <div className="text-sm font-bold text-white">{holdings.length}</div>
+                    </div>
+                    <div className="text-center border-x border-gray-700">
+                      <div className="text-[10px] text-gray-400">Allocation</div>
+                      <div className="text-sm font-bold text-white">{formatCurrency(totalAllocation)}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-[10px] text-gray-400">Potential Gain</div>
+                      <div className="text-sm font-bold text-emerald-400">
+                        +{totalAllocation > 0 ? ((totalATHReturn / totalAllocation - 1) * 100).toFixed(0) : 0}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Token List */}
+                  <div className="space-y-1.5">
+                    {sortedHoldingsData.map(({ holding, token, multiplier, athReturn }) => (
+                      <div key={holding.tokenAddress} className="flex items-center justify-between py-1.5 px-2 bg-gray-800/30 rounded">
+                        <div className="flex items-center gap-2">
+                          {token.logoUrl ? (
+                            <img src={token.logoUrl} alt={token.symbol} className="w-5 h-5 rounded-full" />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center text-[8px] text-gray-400">
+                              {token.symbol.charAt(0)}
+                            </div>
+                          )}
+                          <span className="text-xs text-white font-medium">{token.symbol}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs">
+                          <span className="text-gray-400">{formatCurrency(holding.allocation)}</span>
+                          <span className="text-emerald-400">→ {formatCurrency(athReturn)}</span>
+                          <span className="text-amber-400 text-[10px]">{multiplier.toFixed(1)}x</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="mt-4 pt-3 border-t border-gray-700 flex items-center justify-between">
+                    <span className="text-[10px] text-gray-500">Track your memecoins at topmemes.io</span>
+                    <span className="text-[10px] text-gray-500">{new Date().toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 p-4 border-t border-gray-700">
+                <button
+                  onClick={handleCopyImage}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg font-medium hover:bg-gray-700 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </button>
+                <button
+                  onClick={handleDownloadImage}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg font-medium hover:from-teal-600 hover:to-cyan-600 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
         )}
       </div>
     </MainLayout>
