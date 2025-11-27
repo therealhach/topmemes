@@ -115,6 +115,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://pro-api.coingecko.com" />
         <link rel="dns-prefetch" href="https://api.dexscreener.com" />
         <link rel="dns-prefetch" href="https://pro-api.coingecko.com" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1291230090007651"
+          crossOrigin="anonymous"
+        />
         <WebsiteJsonLd />
         <OrganizationJsonLd />
         <FAQJsonLd />
