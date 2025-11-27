@@ -66,10 +66,16 @@ export default function PaperPortfolioPage() {
     !holdings.some(h => h.tokenAddress === t.address)
   );
 
-  const filteredTokens = availableTokens.filter(t =>
-    t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTokens = availableTokens
+    .filter(t =>
+      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      const multiplierA = a.athPrice && a.price ? a.athPrice / a.price : 1;
+      const multiplierB = b.athPrice && b.price ? b.athPrice / b.price : 1;
+      return multiplierB - multiplierA; // High to low
+    });
 
   const handleAddToken = (token: MemeTokenData) => {
     const amount = parseFloat(allocationInputs[token.address] || '0');
@@ -428,18 +434,18 @@ export default function PaperPortfolioPage() {
 
                       return (
                         <tr key={token.address} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
-                          <td className="py-1.5 px-2">
-                            <div className="flex items-center gap-2">
+                          <td className="py-1.5 px-1 sm:px-2 max-w-[100px] sm:max-w-none">
+                            <div className="flex items-center gap-1 sm:gap-2">
                               {token.logoUrl ? (
-                                <img src={token.logoUrl} alt={token.symbol} className="w-5 h-5 rounded-full" />
+                                <img src={token.logoUrl} alt={token.symbol} className="w-4 h-4 sm:w-5 sm:h-5 rounded-full flex-shrink-0" />
                               ) : (
-                                <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center text-[9px] text-gray-400">
+                                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-700 flex items-center justify-center text-[8px] sm:text-[9px] text-gray-400 flex-shrink-0">
                                   {token.symbol.charAt(0)}
                                 </div>
                               )}
-                              <div>
-                                <div className="text-white font-medium text-xs">{token.name}</div>
-                                <div className="text-[10px] text-gray-400">{token.symbol}</div>
+                              <div className="min-w-0">
+                                <div className="text-white font-medium text-[10px] sm:text-xs truncate">{token.name}</div>
+                                <div className="text-[9px] sm:text-[10px] text-gray-400">{token.symbol}</div>
                               </div>
                             </div>
                           </td>
@@ -452,7 +458,7 @@ export default function PaperPortfolioPage() {
                           <td className="py-1.5 px-2 text-right text-xs text-emerald-400">
                             {multiplier.toFixed(1)}x
                           </td>
-                          <td className="py-1.5 px-2 text-right">
+                          <td className="py-1.5 px-1 sm:px-2 text-right">
                             <input
                               type="number"
                               value={inputValue}
@@ -461,12 +467,12 @@ export default function PaperPortfolioPage() {
                                 [token.address]: e.target.value
                               }))}
                               placeholder="0"
-                              className="w-20 px-1.5 py-0.5 bg-gray-800 border border-gray-600 rounded text-xs text-white text-right focus:outline-none focus:border-cyan-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              className="w-14 sm:w-20 px-1 sm:px-1.5 py-0.5 bg-gray-800 border border-gray-600 rounded text-[10px] sm:text-xs text-white text-right focus:outline-none focus:border-cyan-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               min="0"
                               step="any"
                             />
                             {athReturn > 0 && (
-                              <div className="text-[10px] text-emerald-400 mt-0.5">
+                              <div className="text-[9px] sm:text-[10px] text-emerald-400 mt-0.5">
                                 → {formatCurrency(athReturn)}
                               </div>
                             )}
