@@ -243,6 +243,7 @@ export default function PaperPortfolioPage() {
                   <th className="text-right py-1.5 px-2">Allocation</th>
                   <th className="text-right py-1.5 px-2">ATH Return</th>
                   <th className="text-right py-1.5 px-2"></th>
+                  <th className="text-right py-1.5 px-2"></th>
                 </tr>
               </thead>
               <tbody>
@@ -292,6 +293,14 @@ export default function PaperPortfolioPage() {
                       <td className="py-1.5 px-2 text-right">
                         <div className="text-emerald-400 font-semibold text-xs">{formatCurrency(athReturn)}</div>
                         <div className="text-[10px] text-emerald-400/70">+{((multiplier - 1) * 100).toFixed(0)}%</div>
+                      </td>
+                      <td className="py-1.5 px-2 text-right">
+                        <a
+                          href={`/token/${holding.tokenAddress}`}
+                          className="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded text-[10px] font-medium hover:bg-cyan-500/30 transition-all inline-block"
+                        >
+                          Buy
+                        </a>
                       </td>
                       <td className="py-1.5 px-2 text-right">
                         <button
