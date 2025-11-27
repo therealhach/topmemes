@@ -53,9 +53,17 @@ function MainLayoutContent({ children }: MainLayoutProps) {
     setMounted(true);
   }, []);
 
-  // Load watchlist count on mount
+  // Load watchlist count on mount and listen for changes
   useEffect(() => {
     setWatchlistCount(loadWatchlist().length);
+
+    // Listen for watchlist changes from other components
+    const handleWatchlistChange = () => {
+      setWatchlistCount(loadWatchlist().length);
+    };
+
+    window.addEventListener('watchlist-updated', handleWatchlistChange);
+    return () => window.removeEventListener('watchlist-updated', handleWatchlistChange);
   }, []);
 
   useEffect(() => {

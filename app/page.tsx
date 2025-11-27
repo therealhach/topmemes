@@ -7,6 +7,7 @@ import TokenTable, { TokenData } from '@/components/TokenTable';
 import Leaderboard from '@/components/Leaderboard';
 import GainersLosersView from '@/components/GainersLosersView';
 import ClosestToATHView from '@/components/ClosestToATHView';
+import CategoryStats from '@/components/CategoryStats';
 import { TokenCategory, Chain } from '@/lib/helius';
 import { loadWatchlist } from '@/lib/watchlist';
 
@@ -73,6 +74,11 @@ function HomeContent() {
             onViewClosestATH={handleViewClosestATH}
           />
         </div>
+      )}
+
+      {/* Category Stats - Show when a specific category is selected */}
+      {categoryFilter !== 'all' && allTokens.length > 0 && viewMode === 'table' && (
+        <CategoryStats tokens={allTokens} category={categoryFilter} />
       )}
 
       <main className="w-full max-w-full xl:max-w-[1700px] flex items-start justify-center animate-fade-in-up px-2 sm:px-4" style={{ animationDelay: '0.2s', opacity: 0 }}>

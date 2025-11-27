@@ -13,6 +13,7 @@ import {
 } from '@/lib/jupiter';
 import PriceChart from './PriceChart';
 import ShareModal from './ShareModal';
+import { loadWatchlist, toggleWatchlist, WatchlistItem } from '@/lib/watchlist';
 
 type TokenCategory = 'dogs' | 'cats' | 'frogs' | 'ai' | 'others';
 
@@ -95,6 +96,21 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
   const [slippageBps, setSlippageBps] = useState<number>(300); // 3% default
   const [recentSwaps, setRecentSwaps] = useState<any[]>([]);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
+
+  // Load watchlist on mount
+  useEffect(() => {
+    setWatchlist(loadWatchlist());
+  }, []);
+
+  const isWatchlisted = watchlist.some(item => item.address === token.address);
+
+  const handleWatchlistToggle = () => {
+    toggleWatchlist(token.address, token.symbol);
+    setWatchlist(loadWatchlist());
+    // Dispatch event to update watchlist count in header
+    window.dispatchEvent(new Event('watchlist-updated'));
+  };
 
   useEffect(() => {
     fetchSolPrice();
@@ -480,6 +496,26 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
                 </div>
                 <p className="text-xs text-cyan-400/70">{token.symbol}</p>
               </div>
+              {/* Watchlist Button */}
+              <button
+                onClick={handleWatchlistToggle}
+                className={`p-2 rounded-lg transition-all ${
+                  isWatchlisted
+                    ? 'bg-yellow-500/20 border border-yellow-500/40 text-yellow-400'
+                    : 'bg-gray-800/50 border border-gray-600 text-gray-400 hover:text-yellow-400 hover:border-yellow-500/40'
+                }`}
+                title={isWatchlisted ? 'Remove from watchlist' : 'Add to watchlist'}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill={isWatchlisted ? 'currentColor' : 'none'}
+                  viewBox="0 0 20 20"
+                  stroke="currentColor"
+                  strokeWidth={isWatchlisted ? 0 : 1.5}
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </button>
               {/* Share Button */}
               <button
                 onClick={() => setShowShareModal(true)}

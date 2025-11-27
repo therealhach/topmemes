@@ -77,7 +77,7 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
   const [editingToken, setEditingToken] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const [isUpdating, setIsUpdating] = useState(false);
-  const [sortColumn, setSortColumn] = useState<string>('mcap');
+  const [sortColumn, setSortColumn] = useState<string>('24h');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [isLoadingFromCache, setIsLoadingFromCache] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -102,6 +102,8 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
     const { watchlist: newWatchlist } = toggleWatchlist(address);
     setWatchlist(newWatchlist);
     onWatchlistChange();
+    // Dispatch event to update watchlist count in header
+    window.dispatchEvent(new Event('watchlist-updated'));
   }, [onWatchlistChange]);
 
   const handleSort = (column: string) => {
@@ -528,7 +530,7 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
               <tr
                 key={token.id}
                 onClick={() => onTokenSelect?.(token)}
-                className={`${
+                className={`group ${
                   index % 2 === 0 ? 'bg-gray-900/40' : 'bg-gray-800/40'
                 } hover:bg-cyan-900/30 transition-all duration-200 border-b border-cyan-500/10 cursor-pointer`}
               >
@@ -588,6 +590,13 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                           title="Solana"
                         />
                       )}
+                      <a
+                        href={`/token/${token.address}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="ml-1 px-1.5 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded text-[9px] font-medium hover:bg-cyan-500/30 transition-all opacity-0 group-hover:opacity-100"
+                      >
+                        Buy
+                      </a>
                     </div>
                   </div>
                 </td>
