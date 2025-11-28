@@ -106,6 +106,9 @@ export async function getJupiterSwapTransaction(
 /**
  * Execute a swap transaction using Phantom's signAndSendTransaction
  * This method is recommended by Phantom/Blowfish for better security integration
+ *
+ * Note: Normalizes return types between Phantom's injected API ({ signature })
+ * and wallet-adapter's version (string) to ensure consistent behavior.
  */
 export async function executeSwap(
   connection: Connection,
@@ -120,36 +123,24 @@ export async function executeSwap(
     // Use signAndSendTransaction if available (Phantom's recommended method)
     // This allows Phantom/Blowfish to add their security guard instructions
     if (wallet.signAndSendTransaction) {
-      const { signature } = await wallet.signAndSendTransaction(transaction, {
+      const result = await wallet.signAndSendTransaction(transaction, {
+        skipPreflight: false,
+        preflightCommitment: 'confirmed',
+      });
+      // Normalize return type: Phantom injected API returns { signature },
+      // wallet-adapter returns string directly
+      return typeof result === 'string' ? result : result.signature;
+    }
+
+    // Fallback to signTransaction + sendRawTransaction
+    // Uses connection.sendRawTransaction to keep Phantom as the only signer
+    if (wallet.signTransaction) {
+      const signedTransaction = await wallet.signTransaction(transaction);
+      const signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
         skipPreflight: false,
         preflightCommitment: 'confirmed',
       });
       return signature;
-    }
-
-    // Fallback to signTransaction + send via API if signAndSendTransaction not available
-    if (wallet.signTransaction) {
-      const signedTransaction = await wallet.signTransaction(transaction);
-      const serializedTransaction = Buffer.from(signedTransaction.serialize()).toString('base64');
-
-      const response = await fetch('/api/send-transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          signedTransaction: serializedTransaction,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Send transaction error:', errorData);
-        throw new Error(errorData.error + ': ' + (errorData.details || 'Failed to send transaction'));
-      }
-
-      const data = await response.json();
-      return data.txid;
     }
 
     throw new Error('Wallet does not support transaction signing');
