@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { WalletContextProvider } from "@/components/WalletProvider";
 import { WebsiteJsonLd, OrganizationJsonLd, FAQJsonLd } from "@/components/JsonLd";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -131,6 +132,7 @@ export default function RootLayout({
         <WalletContextProvider>
           {children}
         </WalletContextProvider>
+        <Analytics />
       </body>
     </html>
   );
