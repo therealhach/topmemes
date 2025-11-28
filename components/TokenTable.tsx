@@ -46,6 +46,8 @@ const formatNumber = (num: number): string => {
     return `$${(num / 1000000000).toFixed(2)}B`;
   } else if (num >= 1000000) {
     return `$${(num / 1000000).toFixed(2)}M`;
+  } else if (num >= 1000) {
+    return `$${(num / 1000).toFixed(0)}K`;
   }
   return `$${num.toLocaleString()}`;
 };
@@ -466,13 +468,13 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gradient-to-r from-teal-900/80 via-cyan-900/80 to-teal-900/80 border-b border-cyan-500/30">
-              <th className="px-2 py-1.5 text-center text-xs font-semibold text-cyan-300 w-10">
+              <th className="px-1 py-1.5 text-center text-xs font-semibold text-cyan-300 w-6">
                 <svg className="w-3 h-3 mx-auto text-yellow-400/60" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               </th>
               <th
-                className="px-2 py-1.5 text-left text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none"
+                className="px-1 py-1.5 text-left text-xs font-semibold text-cyan-300 cursor-pointer hover:text-cyan-100 transition-colors select-none w-6"
                 onClick={() => handleSort('rank')}
               >
                 {sortColumn === 'rank' && <span className="text-[8px] mr-0.5">{sortDirection === 'asc' ? '▲' : '▼'}</span>}#
@@ -538,7 +540,7 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                 } hover:bg-cyan-900/30 transition-all duration-200 border-b border-cyan-500/10 cursor-pointer`}
               >
                 {/* Watchlist Star */}
-                <td className="px-2 py-2 text-center align-middle" onClick={(e) => handleWatchlistToggle(e, token.address)}>
+                <td className="px-1 py-2 text-center align-middle w-6" onClick={(e) => handleWatchlistToggle(e, token.address)}>
                   <button
                     className={`p-1 rounded transition-all hover:scale-110 ${
                       watchedAddresses.has(token.address)
@@ -558,7 +560,7 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                     </svg>
                   </button>
                 </td>
-                <td className="px-3 py-2 text-sm text-cyan-400/70 align-middle">{startIndex + index + 1}</td>
+                <td className="px-1 py-2 text-sm text-cyan-400/70 align-middle w-6">{startIndex + index + 1}</td>
                 <td className="px-2 sm:px-3 py-2 text-[11px] sm:text-sm font-semibold text-white align-middle">
                   <div className="flex items-center gap-2 sm:gap-3">
                     {token.logoUrl ? (

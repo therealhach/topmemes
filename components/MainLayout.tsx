@@ -478,7 +478,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
                     />
                   </div>
                   {searchResults.length > 0 && (
-                    <div className="max-h-64 overflow-y-auto border-t border-gray-700">
+                    <div className="max-h-64 overflow-y-auto border-t border-gray-700 custom-scrollbar custom-scrollbar-cyan">
                       {searchResults.map((token) => (
                         <button
                           key={token.address}
