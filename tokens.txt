@@ -24,8 +24,7 @@
 #ai
 
 #frogs
-https://dexscreener.com/solana/gdfcd7l8x1giudfz1wthnheb352k3ni37rswtjgmglpt,0.00940
 
 
 #others
-https://dexscreener.com/solana/7rqd8fhc1rimv3v9edcrz6rnfsjn1puxm9umjaurjrnj,0.09299
+https://dexscreener.com/solana/fdry5i5kuadz1ik8gps26qjj9rw9mpufxmeggc2hnsp7
