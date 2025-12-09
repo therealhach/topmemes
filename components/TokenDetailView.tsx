@@ -383,40 +383,42 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
             </div>
           </div>
 
-          {/* Progress Bar - Price to ATH */}
-          <div className="mt-2 lg:mt-3">
-            <div className="flex items-center justify-center mb-2">
-              <span className="text-[10px] lg:text-xs text-gray-400">{Math.min(100, (token.price || 0) / token.athPrice * 100).toFixed(1)}% to ATH</span>
-            </div>
-            <div className="flex items-center gap-[1px]">
-              {Array.from({ length: 100 }).map((_, index) => {
-                const progressPercent = Math.min(100, (token.price || 0) / token.athPrice * 100);
-                const filledBlocks = Math.max(3, Math.round(progressPercent)); // Minimum 3 blocks filled
-                const isFilled = index < filledBlocks;
+          {/* Progress Bar - Price to ATH (only show if ATH data exists) */}
+          {token.athPrice > 0 && (
+            <div className="mt-2 lg:mt-3">
+              <div className="flex items-center justify-center mb-2">
+                <span className="text-[10px] lg:text-xs text-gray-400">{Math.min(100, (token.price || 0) / token.athPrice * 100).toFixed(1)}% to ATH</span>
+              </div>
+              <div className="flex items-center gap-[1px]">
+                {Array.from({ length: 100 }).map((_, index) => {
+                  const progressPercent = Math.min(100, (token.price || 0) / token.athPrice * 100);
+                  const filledBlocks = Math.max(3, Math.round(progressPercent)); // Minimum 3 blocks filled
+                  const isFilled = index < filledBlocks;
 
-                // Color based on progress
-                let blockColor = 'bg-gray-700/50';
-                if (isFilled) {
-                  if (progressPercent >= 80) blockColor = 'bg-emerald-500';
-                  else if (progressPercent >= 60) blockColor = 'bg-cyan-500';
-                  else if (progressPercent >= 40) blockColor = 'bg-yellow-500';
-                  else if (progressPercent >= 20) blockColor = 'bg-orange-500';
-                  else blockColor = 'bg-rose-500';
-                }
+                  // Color based on progress
+                  let blockColor = 'bg-gray-700/50';
+                  if (isFilled) {
+                    if (progressPercent >= 80) blockColor = 'bg-emerald-500';
+                    else if (progressPercent >= 60) blockColor = 'bg-cyan-500';
+                    else if (progressPercent >= 40) blockColor = 'bg-yellow-500';
+                    else if (progressPercent >= 20) blockColor = 'bg-orange-500';
+                    else blockColor = 'bg-rose-500';
+                  }
 
-                return (
-                  <div
-                    key={index}
-                    className={`flex-1 h-4 lg:h-6 rounded-[1px] transition-all duration-300 ${blockColor}`}
-                  />
-                );
-              })}
+                  return (
+                    <div
+                      key={index}
+                      className={`flex-1 h-4 lg:h-6 rounded-[1px] transition-all duration-300 ${blockColor}`}
+                    />
+                  );
+                })}
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs lg:text-sm font-bold text-cyan-400">{token.price ? formatPrice(token.price) : 'N/A'}</span>
+                <span className="text-xs lg:text-sm font-bold text-amber-400">{formatPrice(token.athPrice)}</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs lg:text-sm font-bold text-cyan-400">{token.price ? formatPrice(token.price) : 'N/A'}</span>
-              <span className="text-xs lg:text-sm font-bold text-amber-400">{formatPrice(token.athPrice)}</span>
-            </div>
-          </div>
+          )}
 
           {/* My Recent Transactions - Desktop only (mobile version below) */}
           {recentSwaps.length > 0 && (
