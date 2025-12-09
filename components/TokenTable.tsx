@@ -624,11 +624,11 @@ export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categ
                       />
                     </div>
                   ) : (
-                    token.athPrice ? formatPrice(token.athPrice) : 'N/A'
+                    token.athPrice ? formatPrice(token.athPrice) : ''
                   )}
                 </td>
                 <td className="hidden lg:table-cell px-3 py-2 text-sm text-right font-semibold text-teal-400 align-middle">
-                  {formatPercentage(token.percentToGainPeak)}
+                  {token.athPrice ? formatPercentage(token.percentToGainPeak) : ''}
                 </td>
                 <td
                   className={`hidden lg:table-cell px-3 py-2 text-sm text-right font-semibold align-middle ${
