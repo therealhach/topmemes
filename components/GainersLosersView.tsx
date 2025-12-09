@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { TokenData } from './TokenTable';
 
 const formatPrice = (price: number): string => {
@@ -59,41 +60,46 @@ function GainersLosersTable({ title, tokens, isGainers }: GainersLosersTableProp
           </thead>
           <tbody>
             {tokens.map((token, index) => (
-              <tr
+              <Link
                 key={token.address}
-                className={`${index % 2 === 0 ? 'bg-gray-900/40' : 'bg-gray-800/40'} hover:bg-cyan-900/20 transition-colors border-b border-cyan-500/10`}
+                href={`/token/${token.address}`}
+                className="contents"
               >
-                <td className="px-2 py-2 text-[10px] text-gray-400">{index + 1}</td>
-                <td className="px-2 py-2">
-                  <div className="flex items-center gap-1.5">
-                    {token.logoUrl ? (
-                      <img
-                        src={token.logoUrl}
-                        alt={token.name}
-                        className="w-5 h-5 rounded-full"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    ) : (
-                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white text-[8px] font-bold">
-                        {token.symbol.substring(0, 2)}
-                      </div>
-                    )}
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px] font-medium text-white">{token.symbol}</span>
-                      {token.chain === 'ethereum' ? (
-                        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg" alt="ETH" className="w-2 h-2" />
+                <tr
+                  className={`${index % 2 === 0 ? 'bg-gray-900/40' : 'bg-gray-800/40'} hover:bg-cyan-900/20 transition-colors border-b border-cyan-500/10 cursor-pointer`}
+                >
+                  <td className="px-2 py-2 text-[10px] text-gray-400">{index + 1}</td>
+                  <td className="px-2 py-2">
+                    <div className="flex items-center gap-1.5">
+                      {token.logoUrl ? (
+                        <img
+                          src={token.logoUrl}
+                          alt={token.name}
+                          className="w-5 h-5 rounded-full"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        />
                       ) : (
-                        <img src="https://cryptologos.cc/logos/solana-sol-logo.svg" alt="SOL" className="w-1.5 h-1.5" />
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white text-[8px] font-bold">
+                          {token.symbol.substring(0, 2)}
+                        </div>
                       )}
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] font-medium text-white">{token.symbol}</span>
+                        {token.chain === 'ethereum' ? (
+                          <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg" alt="ETH" className="w-2 h-2" />
+                        ) : (
+                          <img src="https://cryptologos.cc/logos/solana-sol-logo.svg" alt="SOL" className="w-1.5 h-1.5" />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="px-2 py-2 text-[10px] text-right text-gray-200">{formatPrice(token.price || 0)}</td>
-                <td className={`px-2 py-2 text-[10px] text-right font-semibold ${isGainers ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {formatPercentage(token.twentyFourHourChange)}
-                </td>
-                <td className="px-2 py-2 text-[10px] text-right text-gray-200">{formatNumber(token.currentMcap)}</td>
-              </tr>
+                  </td>
+                  <td className="px-2 py-2 text-[10px] text-right text-gray-200">{formatPrice(token.price || 0)}</td>
+                  <td className={`px-2 py-2 text-[10px] text-right font-semibold ${isGainers ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {formatPercentage(token.twentyFourHourChange)}
+                  </td>
+                  <td className="px-2 py-2 text-[10px] text-right text-gray-200">{formatNumber(token.currentMcap)}</td>
+                </tr>
+              </Link>
             ))}
             {tokens.length === 0 && (
               <tr>
