@@ -324,7 +324,7 @@ export default function PriceChart({
   };
 
   return (
-    <div className={`flex flex-col ${className}`}>
+    <div className={`flex flex-col ${useDexScreener ? 'h-[500px] lg:h-[600px]' : className}`}>
       {/* Price Display - hide when using DexScreener */}
       {!useDexScreener && (
         <div className="mb-3 px-1">
