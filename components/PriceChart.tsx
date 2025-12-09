@@ -54,6 +54,7 @@ export default function PriceChart({
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
   const [chartColor, setChartColor] = useState<string | null>(null);
   const [colorLoaded, setColorLoaded] = useState(false);
+  const [useDexScreener, setUseDexScreener] = useState(false);
 
   // Extract color from token logo - do this FIRST before loading chart data
   useEffect(() => {
@@ -170,6 +171,7 @@ export default function PriceChart({
 
       setIsLoading(true);
       setError(null);
+      setUseDexScreener(false);
 
       try {
         // Remove existing series
@@ -183,6 +185,7 @@ export default function PriceChart({
 
           if (data.length === 0) {
             setError('No price data available');
+            setUseDexScreener(true);
             setIsLoading(false);
             return;
           }
@@ -238,6 +241,7 @@ export default function PriceChart({
 
           if (data.length === 0) {
             setError('No price data available');
+            setUseDexScreener(true);
             setIsLoading(false);
             return;
           }
@@ -343,50 +347,65 @@ export default function PriceChart({
 
       {/* Chart Container */}
       <div className="relative flex-1 min-h-[200px] rounded-lg overflow-hidden">
-        <div ref={chartContainerRef} className="w-full h-full" />
-
-        {/* Loading Overlay */}
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-transparent">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs text-gray-400">Loading chart...</span>
-            </div>
+        {/* DexScreener Fallback */}
+        {useDexScreener && !isLoading ? (
+          <div className="w-full h-full" style={{ position: 'relative', paddingBottom: '65%' }}>
+            <iframe
+              src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
+              style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, border: 0 }}
+              title="DexScreener Chart"
+            />
           </div>
-        )}
+        ) : (
+          <>
+            <div ref={chartContainerRef} className="w-full h-full" />
 
-        {/* Error Overlay */}
-        {error && !isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <svg className="w-8 h-8 text-gray-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              <p className="text-xs text-gray-500">{error}</p>
-            </div>
-          </div>
+            {/* Loading Overlay */}
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-transparent">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-gray-400">Loading chart...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Error Overlay - only show if not using DexScreener */}
+            {error && !isLoading && !useDexScreener && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <svg className="w-8 h-8 text-gray-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-xs text-gray-500">{error}</p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Chart Controls */}
-      <div className="flex items-center justify-end mt-3 px-1">
-        {/* Timeframe Selector */}
-        <div className="flex items-center gap-1">
-          {timeframeOptions.map((tf) => (
-            <button
-              key={tf.value}
-              onClick={() => setTimeframe(tf.value)}
-              className={`px-2 py-1 text-xs rounded transition-colors ${
-                timeframe === tf.value
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-500 hover:text-gray-300'
-              }`}
-            >
-              {tf.label}
-            </button>
-          ))}
+      {/* Chart Controls - hide when using DexScreener */}
+      {!useDexScreener && (
+        <div className="flex items-center justify-end mt-3 px-1">
+          {/* Timeframe Selector */}
+          <div className="flex items-center gap-1">
+            {timeframeOptions.map((tf) => (
+              <button
+                key={tf.value}
+                onClick={() => setTimeframe(tf.value)}
+                className={`px-2 py-1 text-xs rounded transition-colors ${
+                  timeframe === tf.value
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-500 hover:text-gray-300'
+                }`}
+              >
+                {tf.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
