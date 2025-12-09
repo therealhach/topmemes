@@ -190,6 +190,17 @@ function MainLayoutContent({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* Feedback Banner */}
+      <div className="fixed top-0 left-0 right-0 z-[9999] bg-gradient-to-r from-cyan-600 to-teal-600 text-white">
+        <div className="max-w-6xl mx-auto px-4 py-1.5 flex items-center justify-center gap-2 text-xs sm:text-sm">
+          <span>🚀 We're new and still building!</span>
+          <span className="hidden sm:inline">Send us feedback:</span>
+          <a href="https://x.com/topmemes_io" target="_blank" rel="noopener noreferrer" className="underline hover:text-cyan-200 font-medium">Twitter</a>
+          <span className="text-white/60">or</span>
+          <Link href="/contact" className="underline hover:text-cyan-200 font-medium">Contact</Link>
+        </div>
+      </div>
+
       {/* Cosmic Background Layer */}
       <div className="fixed inset-0 bg-black">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-950 to-black"></div>
@@ -227,7 +238,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
       </div>
 
       {/* Content Layer */}
-      <div className="relative z-10 flex flex-col items-center px-2 sm:px-4 py-4">
+      <div className="relative z-10 flex flex-col items-center px-2 sm:px-4 py-4 pt-10">
         {/* Top Stats Bar */}
         <div className="w-full max-w-6xl flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 py-1 text-[10px] sm:text-xs text-gray-400 animate-fade-in-up relative z-50 gap-1">
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
