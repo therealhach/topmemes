@@ -415,7 +415,7 @@ export default function PriceChart({
             }}
           >
             <iframe
-              src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&trades=0&info=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
+              src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&trades=0&info=0&chartTheme=dark&theme=dark&chartStyle=1&chartType=usd&interval=15`}
               style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, border: 0, zIndex: 10 }}
               title="DexScreener Chart"
               allow="clipboard-write"
