@@ -56,7 +56,12 @@ export default function PriceChart({
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
   const [chartColor, setChartColor] = useState<string | null>(null);
   const [colorLoaded, setColorLoaded] = useState(false);
-  const [useDexScreener, setUseDexScreener] = useState(false);
+  const [hasCoinGeckoData, setHasCoinGeckoData] = useState(true);
+  const [chartSource, setChartSource] = useState<'topmeme' | 'dexscreener'>('topmeme');
+  const [showChartDropdown, setShowChartDropdown] = useState(false);
+
+  // Determine if we should show DexScreener (user selected it OR no CoinGecko data)
+  const useDexScreener = chartSource === 'dexscreener' || !hasCoinGeckoData;
 
   // Notify parent when DexScreener fallback is used
   useEffect(() => {
@@ -178,7 +183,6 @@ export default function PriceChart({
 
       setIsLoading(true);
       setError(null);
-      setUseDexScreener(false);
 
       try {
         // Remove existing series
@@ -192,10 +196,11 @@ export default function PriceChart({
 
           if (data.length === 0) {
             setError('No price data available');
-            setUseDexScreener(true);
+            setHasCoinGeckoData(false);
             setIsLoading(false);
             return;
           }
+          setHasCoinGeckoData(true);
 
           // Calculate appropriate precision based on price
           const minPrice = Math.min(...data.map(d => Math.min(d.open, d.close, d.low)));
@@ -248,10 +253,11 @@ export default function PriceChart({
 
           if (data.length === 0) {
             setError('No price data available');
-            setUseDexScreener(true);
+            setHasCoinGeckoData(false);
             setIsLoading(false);
             return;
           }
+          setHasCoinGeckoData(true);
 
           // Determine line color based on price change
           const firstPrice = data[0].value;
@@ -332,6 +338,49 @@ export default function PriceChart({
 
   return (
     <div className={`flex flex-col ${className}`}>
+      {/* Chart Source Dropdown - only show if CoinGecko data is available */}
+      {hasCoinGeckoData && (
+        <div className="flex justify-end mb-2 px-1 relative">
+          <button
+            onClick={() => setShowChartDropdown(!showChartDropdown)}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-gray-800/60 hover:bg-gray-700/60 border border-gray-700 rounded-lg text-gray-300 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+            {chartSource === 'topmeme' ? 'TopMeme Chart' : 'DexScreener'}
+            <svg className={`w-3 h-3 transition-transform ${showChartDropdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {showChartDropdown && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowChartDropdown(false)} />
+              <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-20 overflow-hidden min-w-[140px]">
+                <button
+                  onClick={() => { setChartSource('topmeme'); setShowChartDropdown(false); }}
+                  className={`w-full px-3 py-2 text-xs text-left flex items-center gap-2 transition-colors ${
+                    chartSource === 'topmeme' ? 'bg-cyan-600/20 text-cyan-400' : 'text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${chartSource === 'topmeme' ? 'bg-cyan-400' : 'bg-transparent'}`} />
+                  TopMeme Chart
+                </button>
+                <button
+                  onClick={() => { setChartSource('dexscreener'); setShowChartDropdown(false); }}
+                  className={`w-full px-3 py-2 text-xs text-left flex items-center gap-2 transition-colors ${
+                    chartSource === 'dexscreener' ? 'bg-cyan-600/20 text-cyan-400' : 'text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${chartSource === 'dexscreener' ? 'bg-cyan-400' : 'bg-transparent'}`} />
+                  DexScreener
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Price Display - hide when using DexScreener */}
       {!useDexScreener && (
         <div className="mb-3 px-1">
