@@ -100,6 +100,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
   const [recentSwaps, setRecentSwaps] = useState<any[]>([]);
   const [showShareModal, setShowShareModal] = useState(false);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
+  const [isDexScreenerChart, setIsDexScreenerChart] = useState(false);
 
   // Load watchlist on mount
   useEffect(() => {
@@ -351,7 +352,8 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
               chain={token.chain || 'solana'}
               tokenSymbol={token.symbol}
               tokenLogoUrl={token.logoUrl}
-              className="h-[250px] lg:h-[400px]"
+              className={isDexScreenerChart ? '' : 'h-[250px] lg:h-[400px]'}
+              onDexScreenerFallback={setIsDexScreenerChart}
             />
           </div>
 

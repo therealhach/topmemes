@@ -11,6 +11,7 @@ interface PriceChartProps {
   tokenSymbol?: string;
   tokenLogoUrl?: string;
   className?: string;
+  onDexScreenerFallback?: (isDexScreener: boolean) => void;
 }
 
 type ChartType = 'candlestick' | 'line';
@@ -41,6 +42,7 @@ export default function PriceChart({
   tokenSymbol = 'Token',
   tokenLogoUrl,
   className = '',
+  onDexScreenerFallback,
 }: PriceChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -55,6 +57,11 @@ export default function PriceChart({
   const [chartColor, setChartColor] = useState<string | null>(null);
   const [colorLoaded, setColorLoaded] = useState(false);
   const [useDexScreener, setUseDexScreener] = useState(false);
+
+  // Notify parent when DexScreener fallback is used
+  useEffect(() => {
+    onDexScreenerFallback?.(useDexScreener);
+  }, [useDexScreener, onDexScreenerFallback]);
 
   // Extract color from token logo - do this FIRST before loading chart data
   useEffect(() => {
