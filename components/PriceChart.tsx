@@ -325,34 +325,37 @@ export default function PriceChart({
 
   return (
     <div className={`flex flex-col ${className}`}>
-      {/* Price Display */}
-      <div className="mb-3 px-1">
-        {currentPrice && (
-          <div className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
-            {formatPrice(currentPrice)}
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: chartColor || '#f59e0b' }}></span>
-              <span className="relative inline-flex rounded-full h-3 w-3" style={{ backgroundColor: chartColor || '#f59e0b' }}></span>
-            </span>
-          </div>
-        )}
-        {priceChange && (
-          <div className={`text-sm font-medium ${
-            priceChange.percentage >= 0 ? 'text-emerald-400' : 'text-rose-400'
-          }`}>
-            {priceChange.percentage >= 0 ? '↑' : '↓'} {priceChange.value >= 0 ? '+' : ''}{formatPrice(Math.abs(priceChange.value))} ({priceChange.percentage >= 0 ? '+' : ''}{priceChange.percentage.toFixed(2)}%)
-          </div>
-        )}
-      </div>
+      {/* Price Display - hide when using DexScreener */}
+      {!useDexScreener && (
+        <div className="mb-3 px-1">
+          {currentPrice && (
+            <div className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+              {formatPrice(currentPrice)}
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: chartColor || '#f59e0b' }}></span>
+                <span className="relative inline-flex rounded-full h-3 w-3" style={{ backgroundColor: chartColor || '#f59e0b' }}></span>
+              </span>
+            </div>
+          )}
+          {priceChange && (
+            <div className={`text-sm font-medium ${
+              priceChange.percentage >= 0 ? 'text-emerald-400' : 'text-rose-400'
+            }`}>
+              {priceChange.percentage >= 0 ? '↑' : '↓'} {priceChange.value >= 0 ? '+' : ''}{formatPrice(Math.abs(priceChange.value))} ({priceChange.percentage >= 0 ? '+' : ''}{priceChange.percentage.toFixed(2)}%)
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Chart Container */}
-      <div className="relative flex-1 min-h-[200px] rounded-lg overflow-hidden">
+      <div className={`relative flex-1 rounded-lg overflow-hidden ${useDexScreener ? 'min-h-[450px] lg:min-h-[500px]' : 'min-h-[200px]'}`}>
         {/* DexScreener Fallback */}
         {useDexScreener && !isLoading ? (
-          <div className="w-full h-full" style={{ position: 'relative', paddingBottom: '65%' }}>
+          <div className="w-full h-full">
             <iframe
-              src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
-              style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, border: 0 }}
+              src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&theme=dark&chartTheme=dark&chartStyle=0&chartType=usd&interval=15`}
+              className="w-full h-full min-h-[450px] lg:min-h-[500px]"
+              style={{ border: 0 }}
               title="DexScreener Chart"
             />
           </div>
