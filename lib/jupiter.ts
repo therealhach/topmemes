@@ -104,46 +104,29 @@ export async function getJupiterSwapTransaction(
 }
 
 /**
- * Execute a swap transaction using Phantom's signAndSendTransaction
- * This method is recommended by Phantom/Blowfish for better security integration
+ * Execute a swap transaction using wallet adapter's sendTransaction
+ * This method properly integrates with Phantom and Blowfish security
  *
- * Note: Normalizes return types between Phantom's injected API ({ signature })
- * and wallet-adapter's version (string) to ensure consistent behavior.
+ * Uses the sendTransaction method from @solana/wallet-adapter-react context
+ * which correctly handles Phantom's provider integration.
  */
 export async function executeSwap(
   connection: Connection,
   swapTransaction: string,
-  wallet: any
+  sendTransaction: (transaction: VersionedTransaction, connection: Connection, options?: any) => Promise<string>
 ): Promise<string> {
   try {
     // Deserialize the transaction
     const swapTransactionBuf = Buffer.from(swapTransaction, 'base64');
     const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
 
-    // Use signAndSendTransaction if available (Phantom's recommended method)
-    // This allows Phantom/Blowfish to add their security guard instructions
-    if (wallet.signAndSendTransaction) {
-      const result = await wallet.signAndSendTransaction(transaction, {
-        skipPreflight: false,
-        preflightCommitment: 'confirmed',
-      });
-      // Normalize return type: Phantom injected API returns { signature },
-      // wallet-adapter returns string directly
-      return typeof result === 'string' ? result : result.signature;
-    }
+    // Use sendTransaction from wallet adapter context
+    // This properly integrates with Phantom and allows Blowfish guard instructions
+    const signature = await sendTransaction(transaction, connection, {
+      skipPreflight: false,
+    });
 
-    // Fallback to signTransaction + sendRawTransaction
-    // Uses connection.sendRawTransaction to keep Phantom as the only signer
-    if (wallet.signTransaction) {
-      const signedTransaction = await wallet.signTransaction(transaction);
-      const signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
-        skipPreflight: false,
-        preflightCommitment: 'confirmed',
-      });
-      return signature;
-    }
-
-    throw new Error('Wallet does not support transaction signing');
+    return signature;
   } catch (error) {
     console.error('Error executing swap:', error);
     throw error;

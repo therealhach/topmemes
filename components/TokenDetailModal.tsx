@@ -74,7 +74,7 @@ const formatTokenAmount = (amount: number): string => {
 
 export default function TokenDetailModal({ token, onClose, allTokens }: TokenDetailModalProps) {
   const { connection } = useConnection();
-  const { publicKey, signTransaction, wallet, connected } = useWallet();
+  const { publicKey, sendTransaction, connected } = useWallet();
 
   const [activeTab, setActiveTab] = useState<TabType>('buy');
   const [paymentCurrency, setPaymentCurrency] = useState<PaymentCurrency>('USDC');
@@ -183,10 +183,7 @@ export default function TokenDetailModal({ token, onClose, allTokens }: TokenDet
   };
 
   const handleSwap = async () => {
-    const walletAdapter = wallet?.adapter as any;
-    const signAndSendTransaction = walletAdapter?.signAndSendTransaction?.bind(walletAdapter);
-
-    if (!quote || !publicKey || (!signTransaction && !signAndSendTransaction)) {
+    if (!quote || !publicKey || !sendTransaction) {
       alert('Please connect your wallet');
       return;
     }
@@ -204,11 +201,11 @@ export default function TokenDetailModal({ token, onClose, allTokens }: TokenDet
         throw new Error('Failed to get swap transaction');
       }
 
-      // Execute swap - prefer signAndSendTransaction if available
+      // Use sendTransaction from wallet adapter context for proper Phantom integration
       const txid = await executeSwap(
         connection,
         swapTransaction,
-        { signTransaction, signAndSendTransaction }
+        sendTransaction
       );
 
       alert(`Swap successful! Transaction: ${txid}`);

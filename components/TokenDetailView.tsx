@@ -82,7 +82,7 @@ const formatTokenAmount = (amount: number): string => {
 
 export default function TokenDetailView({ token, onBack, allTokens, onTokenSelect }: TokenDetailViewProps) {
   const { connection } = useConnection();
-  const { publicKey, signTransaction, wallet, connected } = useWallet();
+  const { publicKey, sendTransaction, connected } = useWallet();
 
   const [activeTab, setActiveTab] = useState<TabType>('buy');
   const [paymentCurrency, setPaymentCurrency] = useState<PaymentCurrency>('SOL');
@@ -245,10 +245,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
   };
 
   const handleSwap = async () => {
-    const walletAdapter = wallet?.adapter as any;
-    const signAndSendTransaction = walletAdapter?.signAndSendTransaction?.bind(walletAdapter);
-
-    if (!quote || !publicKey || (!signTransaction && !signAndSendTransaction)) {
+    if (!quote || !publicKey || !sendTransaction) {
       setSwapStatus({ type: 'error', message: 'Please connect your wallet' });
       return;
     }
@@ -259,8 +256,8 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
       const swapTransaction = await getJupiterSwapTransaction(quote, publicKey.toBase58(), true);
       if (!swapTransaction) throw new Error('Failed to get swap transaction');
 
-      // Pass both methods, executeSwap will prefer signAndSendTransaction if available
-      const txid = await executeSwap(connection, swapTransaction, { signTransaction, signAndSendTransaction });
+      // Use sendTransaction from wallet adapter context for proper Phantom integration
+      const txid = await executeSwap(connection, swapTransaction, sendTransaction);
 
       // Store swap data immediately after submission (status: submitted)
       const swapAmountNum = parseFloat(amount) || 0;
