@@ -42,6 +42,7 @@ yarn-error.log*
 tokens.txt
 forms.txt
 forms_answers.txt
+ads.txt
 
 # vercel
 .vercel

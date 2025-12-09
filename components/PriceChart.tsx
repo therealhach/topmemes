@@ -324,7 +324,7 @@ export default function PriceChart({
   };
 
   return (
-    <div className={`flex flex-col ${useDexScreener ? 'h-[500px] lg:h-[600px]' : className}`}>
+    <div className={`flex flex-col ${className}`}>
       {/* Price Display - hide when using DexScreener */}
       {!useDexScreener && (
         <div className="mb-3 px-1">
@@ -348,14 +348,13 @@ export default function PriceChart({
       )}
 
       {/* Chart Container */}
-      <div className={`relative flex-1 rounded-lg overflow-hidden ${useDexScreener ? 'min-h-[500px] lg:min-h-[600px]' : 'min-h-[200px]'}`}>
+      <div className={`relative flex-1 rounded-lg overflow-hidden ${useDexScreener ? '' : 'min-h-[200px]'}`}>
         {/* DexScreener Fallback */}
         {useDexScreener && !isLoading ? (
-          <div className="w-full h-full -mt-4">
+          <div className="w-full h-full" style={{ position: 'relative', paddingBottom: '100%' }}>
             <iframe
               src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
-              className="w-full min-h-[500px] lg:min-h-[600px]"
-              style={{ border: 0, height: '100%' }}
+              style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, border: 0 }}
               title="DexScreener Chart"
             />
           </div>
