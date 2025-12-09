@@ -351,11 +351,11 @@ export default function PriceChart({
       <div className={`relative flex-1 rounded-lg overflow-hidden ${useDexScreener ? 'min-h-[500px] lg:min-h-[600px]' : 'min-h-[200px]'}`}>
         {/* DexScreener Fallback */}
         {useDexScreener && !isLoading ? (
-          <div className="w-full h-full">
+          <div className="w-full h-full -mt-4">
             <iframe
               src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
-              className="w-full h-full min-h-[500px] lg:min-h-[600px]"
-              style={{ border: 0 }}
+              className="w-full min-h-[500px] lg:min-h-[600px]"
+              style={{ border: 0, height: '100%' }}
               title="DexScreener Chart"
             />
           </div>
