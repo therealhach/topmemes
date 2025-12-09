@@ -358,9 +358,20 @@ export default function PriceChart({
       <div className={`relative flex-1 rounded-lg overflow-hidden ${useDexScreener ? '' : 'min-h-[200px]'}`}>
         {/* DexScreener Fallback */}
         {useDexScreener && !isLoading ? (
-          <div className="w-full h-full" style={{ position: 'relative', paddingBottom: '75%' }}>
+          <div
+            className="w-full"
+            style={{
+              position: 'relative',
+              paddingBottom: '50%'
+            }}
+          >
+            <style>{`
+              @media(min-width:1400px) {
+                .dexscreener-embed { padding-bottom: 50% !important; }
+              }
+            `}</style>
             <iframe
-              src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
+              src={`https://dexscreener.com/${chain}/${tokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTimeframesToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15`}
               style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, border: 0 }}
               title="DexScreener Chart"
             />
