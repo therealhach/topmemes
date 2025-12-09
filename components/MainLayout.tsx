@@ -190,23 +190,6 @@ function MainLayoutContent({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Phantom Whitelist Warning Banner */}
-      <div className="fixed top-0 left-0 right-0 z-[9999] bg-red-600 text-white">
-        <Link href="/phantom-notice" className="block">
-          <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-center gap-2 text-xs sm:text-sm">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <span className="font-medium">Phantom Wallet Notice:</span>
-            <span className="hidden sm:inline">Our site is pending Phantom whitelist verification. You may see a warning when trading.</span>
-            <span className="sm:hidden">Tap for details about trading warnings.</span>
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
-      </div>
-
       {/* Cosmic Background Layer */}
       <div className="fixed inset-0 bg-black">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-950 to-black"></div>
@@ -244,7 +227,7 @@ function MainLayoutContent({ children }: MainLayoutProps) {
       </div>
 
       {/* Content Layer */}
-      <div className="relative z-10 flex flex-col items-center px-2 sm:px-4 py-4 pt-12">
+      <div className="relative z-10 flex flex-col items-center px-2 sm:px-4 py-4">
         {/* Top Stats Bar */}
         <div className="w-full max-w-6xl flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 py-1 text-[10px] sm:text-xs text-gray-400 animate-fade-in-up relative z-50 gap-1">
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
