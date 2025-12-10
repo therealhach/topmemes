@@ -321,7 +321,7 @@ export default function TokenDetailModal({ token, onClose, allTokens }: TokenDet
             <div>
               <p className="text-[10px] text-gray-400 mb-0.5">1h Change</p>
               <p className={`text-sm font-bold ${token.oneHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {token.oneHourChange >= 0 ? '+' : ''}{token.oneHourChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+                {token.oneHourChange >= 0 ? '+' : ''}{token.oneHourChange.toLocaleString('en-US', { maximumFractionDigits: 0 })}%
               </p>
             </div>
             <div>
@@ -507,7 +507,7 @@ export default function TokenDetailModal({ token, onClose, allTokens }: TokenDet
                 <div className="flex justify-between">
                   <span className="text-gray-400">Upside:</span>
                   <span className="text-emerald-400 font-bold text-xs">
-                    +{token.percentToGainPeak.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% 🚀
+                    +{token.percentToGainPeak.toLocaleString('en-US', { maximumFractionDigits: 0 })}% 🚀
                   </span>
                 </div>
                 <div className="h-px bg-amber-500/30 my-2" />

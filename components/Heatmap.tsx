@@ -297,13 +297,13 @@ export default function Heatmap({ tokens, onTokenClick }: HeatmapProps) {
               <div>
                 <p className="text-gray-500">1H Change</p>
                 <p className={`font-medium ${hoveredToken.oneHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {hoveredToken.oneHourChange >= 0 ? '+' : ''}{hoveredToken.oneHourChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+                  {hoveredToken.oneHourChange >= 0 ? '+' : ''}{hoveredToken.oneHourChange.toLocaleString('en-US', { maximumFractionDigits: 0 })}%
                 </p>
               </div>
               <div>
                 <p className="text-gray-500">24H Change</p>
                 <p className={`font-medium ${hoveredToken.twentyFourHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {hoveredToken.twentyFourHourChange >= 0 ? '+' : ''}{hoveredToken.twentyFourHourChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+                  {hoveredToken.twentyFourHourChange >= 0 ? '+' : ''}{hoveredToken.twentyFourHourChange.toLocaleString('en-US', { maximumFractionDigits: 0 })}%
                 </p>
               </div>
             </div>

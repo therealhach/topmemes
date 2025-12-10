@@ -21,7 +21,7 @@ const formatNumber = (num: number): string => {
 
 const formatPercentage = (num: number): string => {
   const sign = num >= 0 ? '+' : '';
-  return `${sign}${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+  return `${sign}${num.toLocaleString('en-US', { maximumFractionDigits: 0 })}%`;
 };
 
 interface GainersLosersTableProps {

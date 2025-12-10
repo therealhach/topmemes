@@ -367,7 +367,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
               <div className="text-center">
                 <p className="text-[9px] lg:text-[10px] text-gray-500 mb-1">24h Change</p>
                 <p className={`text-xs lg:text-sm font-bold ${token.twentyFourHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {token.twentyFourHourChange >= 0 ? '+' : ''}{token.twentyFourHourChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+                  {token.twentyFourHourChange >= 0 ? '+' : ''}{token.twentyFourHourChange.toLocaleString('en-US', { maximumFractionDigits: 0 })}%
                 </p>
               </div>
               <div className="text-center">
@@ -629,7 +629,7 @@ export default function TokenDetailView({ token, onBack, allTokens, onTokenSelec
               </div>
               <div className="bg-black/30 rounded-lg px-2 py-1.5">
                 <p className="text-[9px] text-gray-500 mb-0.5">Upside to ATH</p>
-                <p className="text-xs font-bold text-teal-400">+{token.percentToGainPeak.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
+                <p className="text-xs font-bold text-teal-400">+{token.percentToGainPeak.toLocaleString('en-US', { maximumFractionDigits: 0 })}%</p>
               </div>
             </div>
           </div>
