@@ -338,9 +338,27 @@ export default function PriceChart({
 
   return (
     <div className={`flex flex-col ${className}`}>
-      {/* Chart Source Dropdown - only show if CoinGecko data is available */}
-      {hasCoinGeckoData && (
-        <div className="flex justify-end mb-2 px-1 relative">
+      {/* Chart Header - Token name on left, dropdown on right */}
+      <div className="flex items-center justify-between mb-2 px-1">
+        {/* Token Name with Logo */}
+        <div className="flex items-center gap-2">
+          {tokenLogoUrl ? (
+            <img
+              src={tokenLogoUrl}
+              alt={tokenSymbol}
+              className="w-6 h-6 rounded-full"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          ) : (
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-white text-[10px] font-bold">
+              {tokenSymbol.substring(0, 2)}
+            </div>
+          )}
+          <span className="text-sm font-semibold text-white">{tokenSymbol}</span>
+        </div>
+
+        {/* Chart Source Dropdown */}
+        <div className="relative">
           <button
             onClick={() => setShowChartDropdown(!showChartDropdown)}
             className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-gray-800/60 hover:bg-gray-700/60 border border-gray-700 rounded-lg text-gray-300 transition-colors"
@@ -379,7 +397,7 @@ export default function PriceChart({
             </>
           )}
         </div>
-      )}
+      </div>
 
       {/* Price Display - hide when using DexScreener */}
       {!useDexScreener && (
