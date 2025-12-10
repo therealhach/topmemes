@@ -345,7 +345,7 @@ export default function PortfolioView({ onBack, onSelectToken }: PortfolioViewPr
               <span className="text-gray-500 text-lg">{solInTotal} SOL</span>
               {portfolioChange24h !== null && (
                 <span className={`text-sm font-medium ${portfolioChange24h >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {portfolioChange24h >= 0 ? '+' : ''}{portfolioChange24h.toFixed(2)}% (24h)
+                  {portfolioChange24h >= 0 ? '+' : ''}{portfolioChange24h.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% (24h)
                 </span>
               )}
             </div>
@@ -516,7 +516,7 @@ export default function PortfolioView({ onBack, onSelectToken }: PortfolioViewPr
                             {holding.price ? formatPrice(holding.price) : '-'}
                           </div>
                           <div className={`text-[10px] h-3 ${holding.change24h !== undefined ? (holding.change24h >= 0 ? 'text-emerald-400' : 'text-rose-400') : 'invisible'}`}>
-                            {holding.change24h !== undefined ? `${holding.change24h >= 0 ? '+' : ''}${holding.change24h.toFixed(2)}%` : '-'}
+                            {holding.change24h !== undefined ? `${holding.change24h >= 0 ? '+' : ''}${holding.change24h.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%` : '-'}
                           </div>
                         </div>
 

@@ -248,7 +248,7 @@ export default function Heatmap({ tokens, onTokenClick }: HeatmapProps) {
 
                 {/* Performance */}
                 <span className={`font-semibold ${getTextColor(performance)} ${showDetails ? 'text-sm' : 'text-[10px]'}`}>
-                  {performance >= 0 ? '+' : ''}{performance.toFixed(1)}%
+                  {performance >= 0 ? '+' : ''}{performance.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
                 </span>
 
                 {/* Market Cap - only on larger boxes */}
@@ -297,13 +297,13 @@ export default function Heatmap({ tokens, onTokenClick }: HeatmapProps) {
               <div>
                 <p className="text-gray-500">1H Change</p>
                 <p className={`font-medium ${hoveredToken.oneHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {hoveredToken.oneHourChange >= 0 ? '+' : ''}{hoveredToken.oneHourChange.toFixed(2)}%
+                  {hoveredToken.oneHourChange >= 0 ? '+' : ''}{hoveredToken.oneHourChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
                 </p>
               </div>
               <div>
                 <p className="text-gray-500">24H Change</p>
                 <p className={`font-medium ${hoveredToken.twentyFourHourChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {hoveredToken.twentyFourHourChange >= 0 ? '+' : ''}{hoveredToken.twentyFourHourChange.toFixed(2)}%
+                  {hoveredToken.twentyFourHourChange >= 0 ? '+' : ''}{hoveredToken.twentyFourHourChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
                 </p>
               </div>
             </div>

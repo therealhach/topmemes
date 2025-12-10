@@ -71,7 +71,7 @@ const formatPrice = (price: number): string => {
 
 const formatPercentage = (num: number): string => {
   const sign = num >= 0 ? '+' : '';
-  return `${sign}${num.toFixed(2)}%`;
+  return `${sign}${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 };
 
 export default function TokenTable({ showWatchlistOnly, onWatchlistChange, categoryFilter, chainFilter = 'all', onTokensLoaded, onTokenSelect }: TokenTableProps) {

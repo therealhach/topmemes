@@ -20,7 +20,7 @@ const formatNumber = (num: number): string => {
 
 const formatPercentage = (num: number): string => {
   const sign = num >= 0 ? '+' : '';
-  return `${sign}${num.toFixed(2)}%`;
+  return `${sign}${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 };
 
 interface ClosestToATHViewProps {
@@ -147,7 +147,7 @@ export default function ClosestToATHView({ tokens, onBack }: ClosestToATHViewPro
                   <td className="px-3 py-2.5">
                     <div className="flex items-center gap-2">
                       <SegmentedProgressBar progress={progress} />
-                      <span className="text-[9px] text-gray-400 w-10 text-right">{progress.toFixed(1)}%</span>
+                      <span className="text-[9px] text-gray-400 w-10 text-right">{progress.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%</span>
                     </div>
                   </td>
                   <td className="px-3 py-2.5 text-[10px] text-right font-semibold text-teal-400">

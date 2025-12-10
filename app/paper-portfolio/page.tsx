@@ -236,7 +236,7 @@ export default function PaperPortfolioPage() {
             <div className="text-xl font-bold text-emerald-400">{formatCurrency(totalATHReturn)}</div>
             {totalAllocation > 0 && (
               <div className="text-xs text-gray-400 mt-1">
-                {((totalATHReturn / totalAllocation - 1) * 100).toFixed(1)}% gain
+                {((totalATHReturn / totalAllocation - 1) * 100).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}% gain
               </div>
             )}
           </div>
@@ -308,7 +308,7 @@ export default function PaperPortfolioPage() {
                       </td>
                       <td className="py-1.5 px-2 text-right hidden sm:table-cell">
                         <div className="text-white text-xs">{formatPrice(token.price)}</div>
-                        <div className="text-[10px] text-red-400">-{percentFromATH.toFixed(1)}% from ATH</div>
+                        <div className="text-[10px] text-red-400">-{percentFromATH.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}% from ATH</div>
                       </td>
                       <td className="py-1.5 px-2 text-right hidden sm:table-cell">
                         <div className="text-amber-400 text-xs">{formatPrice(token.athPrice)}</div>
@@ -343,7 +343,7 @@ export default function PaperPortfolioPage() {
                       </td>
                       <td className="py-1.5 px-2 text-right">
                         <div className="text-emerald-400 font-semibold text-xs">{formatCurrency(athReturn)}</div>
-                        <div className="text-[10px] text-emerald-400/70">+{((multiplier - 1) * 100).toFixed(0)}%</div>
+                        <div className="text-[10px] text-emerald-400/70">+{((multiplier - 1) * 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}%</div>
                       </td>
                       <td className="py-1.5 px-2 text-right">
                         <div className="flex items-center justify-end gap-1">
@@ -563,7 +563,7 @@ export default function PaperPortfolioPage() {
                     <div className="text-center">
                       <div className="text-[10px] text-gray-400">Potential Gain</div>
                       <div className="text-sm font-bold text-emerald-400">
-                        +{totalAllocation > 0 ? ((totalATHReturn / totalAllocation - 1) * 100).toFixed(0) : 0}%
+                        +{totalAllocation > 0 ? ((totalATHReturn / totalAllocation - 1) * 100).toLocaleString('en-US', { maximumFractionDigits: 0 }) : 0}%
                       </div>
                     </div>
                   </div>

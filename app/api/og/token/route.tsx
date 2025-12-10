@@ -304,7 +304,7 @@ export async function GET(request: NextRequest) {
                         color: isPositive ? '#22c55e' : '#ef4444',
                       }}
                     >
-                      {isPositive ? '+' : ''}{priceChange.toFixed(2)}%
+                      {isPositive ? '+' : ''}{priceChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
                     </span>
                   </div>
                 </div>
